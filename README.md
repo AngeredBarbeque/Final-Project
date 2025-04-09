@@ -1,1 +1,1 @@
-## Final Project-Revamp of Jonas's Platformer
+## Final Project - Revamp of Jonas's Platformer
