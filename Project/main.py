@@ -17,3 +17,5 @@ def main():
             pass
         elif action == "Exit":
             break
+
+main()
