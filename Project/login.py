@@ -1,4 +1,5 @@
 from InquirerPy import inquirer
+from InquirerPy.validator import EmptyInputValidator as EIV
 from Crypto.Cipher import AES
 import base64
 
@@ -6,7 +7,7 @@ def encrypt(password):
     key = b"The Eyes Of The Giant Bird's Leg"
     nonce = b'18420056'
     cipher = AES.new(key=key,mode=AES.MODE_CTR,nonce=nonce)
-    cipher_text = base64.b64encode(cipher.encrypt(password)).decode()
+    cipher_text = base64.b64encode(cipher.encrypt(password.encode())).decode()
     return cipher_text
 
 def decrypt(password):
@@ -27,16 +28,22 @@ def sign_in(users):
         message='Select an account:',
         choices=usernames
     ).execute()
-    #ADD PASSWORD CHECKING HERE
+    password =  inquirer.text(
+        message='Enter your password',
+        validate=EIV,
+        invalid_message='Password cannot be empty.'
+    ).execute()
     for i in users:
-        if username == i.get('Username'):
+        if username == i.get('Username') and encrypt(password) == i.get('Password'):
             print(f'Success! Signed in as {username}')
             return i
+    print('Incorrect Password.')
+    return None
         
 def create(users):
     username = inquirer.text(
         message='Enter a username:',
-        validate=lambda result: len(username) < 1 or len(username) > 20,
+        validate=lambda username: len(username.split()) > 1 or len(username.split()) < 20,
         invalid_message='Username must be between 1 and 20 characters long.'
     ).execute()
     for i in users:
@@ -52,12 +59,22 @@ def create(users):
     # ADD WRITNG TO FILE
     print({'Username':username,'Password':password})
 
-def accounts_main():
-    pass
-    #FINISH HERE
+def accounts_main(users):
+    user = None
+    while True:
+        choice = inquirer.select(
+            message='What would you like to do?',
+            choices=['Sign In','Create Account','Exit']
+        ).execute()
+        if choice == 'Sign In':
+            user = sign_in(users)
+        if choice == 'Create Account':
+            create(users)
+        else:
+            return user
 
 
 
 #REPLACE WITH READ FILE FUNCTION
-users = [{'Username':'User','Password':'Pass'},{'Username':'Tom','Password':'Bigglebutt'},{'Username':'Jonas','Password':'RQRT'},{'Username':'O','Password':'O is for Orangutan'}]
-sign_in(users)
+users = []
+accounts_main(users)
