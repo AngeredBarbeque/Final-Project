@@ -156,6 +156,7 @@ def displayScreen():
         if space == playerPos:
             row.append(playerName)
         prevY = space[1]
+    time.sleep(0.05)
 
 def collision(): #Checks for objects around the player.
     global coins
