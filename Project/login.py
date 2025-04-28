@@ -3,6 +3,7 @@ from InquirerPy.validator import EmptyInputValidator as EIV
 from Crypto.Cipher import AES
 import base64
 
+#Encrypts a password and returns the encrypted text.
 def encrypt(password):
     key = b"The Eyes Of The Giant Bird's Leg"
     nonce = b'18420056'
@@ -10,6 +11,7 @@ def encrypt(password):
     cipher_text = base64.b64encode(cipher.encrypt(password.encode())).decode()
     return cipher_text
 
+#Decrypts an encrypted password and returns the decrypted text.
 def decrypt(password):
     key = b"The Eyes Of The Giant Bird's Leg"
     nonce = b'18420056'
@@ -17,6 +19,7 @@ def decrypt(password):
     plain = cipher.decrypt(base64.b64decode(password)).decode()
     return plain
 
+#Returns a user profile after making the user select a profile.
 def sign_in(users):
     if len(users) < 1:
         print('Please create an account before attempting to sign in.')
@@ -40,6 +43,7 @@ def sign_in(users):
     print('Incorrect Password.')
     return None
         
+#Creates an account
 def create(users):
     username = inquirer.text(
         message='Enter a username:',
@@ -59,6 +63,7 @@ def create(users):
     # ADD WRITNG TO FILE
     print({'Username':username,'Password':password})
 
+#Allows the user to create an account or sign in
 def accounts_main(users):
     user = None
     while True:
