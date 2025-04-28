@@ -56,8 +56,7 @@ def create(users):
         invalid_message='Password must be longer than 8 characters'
     ).execute()
     password = encrypt(password)
-    # ADD WRITNG TO FILE
-    print({'Username':username,'Password':password})
+    users.append({'name':username,'password':password,'unlocked':0,'scores':[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],'preferences':20})
 
 def accounts_main(users):
     user = None
@@ -72,9 +71,3 @@ def accounts_main(users):
             create(users)
         else:
             return user
-
-
-
-#REPLACE WITH READ FILE FUNCTION
-users = []
-accounts_main(users)
