@@ -18,9 +18,7 @@
 
 ## Current Features
 ---
-- Create characters from 1 of three classes
-- Battle characters against each other
-- View character stats via graphs
+
 
 ## Contributing
 ---
