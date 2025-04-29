@@ -1,6 +1,7 @@
 #Alex Anderson, Pulling and saving info
 
 import csv
+import ast
 
 def personal_save(users):
     with open("Project/personal.csv", "w", newline='') as file:
@@ -22,7 +23,7 @@ def personal_pull():
         next(reader)
         users = []
         for row in reader:
-            user = {'name': row[0], 'password': row[1], 'unlocked': row[2], 'scores': row[3], 'preferences': row[4]}
+            user = {'name': row[0], 'password': row[1], 'unlocked': ast.literal_eval(row[2]), 'scores': ast.literal_eval(row[3]), 'preferences': ast.literal_eval(row[4])}
             users.append(user)
         return users
 
@@ -32,6 +33,11 @@ def overall_pull():
         next(reader)
         level_scores = []
         for row in reader:
-            score = {'1': row[0], '2': row[1], '3': row[2], '4': row[3], '5': row[4], '6': row[5], '7': row[6], '8': row[7], '9': row[8], '10': row[9]}
+            score = {'1': ast.literal_eval(row[0]), '2': ast.literal_eval(row[1]), '3': ast.literal_eval(row[2]), '4': ast.literal_eval(row[3]), '5': ast.literal_eval(row[4]), '6': ast.literal_eval(row[5]), '7': ast.literal_eval(row[6]), '8': ast.literal_eval(row[7]), '9': ast.literal_eval(row[8]), '10': ast.literal_eval(row[9])}
             level_scores.append(score)
         return level_scores
+
+users = []
+users.append({'name':'username','password':'password','unlocked':0,'scores':[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],'preferences':20})
+personal_save(users)
+print(personal_pull())
