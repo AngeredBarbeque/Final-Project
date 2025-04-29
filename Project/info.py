@@ -36,8 +36,3 @@ def overall_pull():
             score = {'1': ast.literal_eval(row[0]), '2': ast.literal_eval(row[1]), '3': ast.literal_eval(row[2]), '4': ast.literal_eval(row[3]), '5': ast.literal_eval(row[4]), '6': ast.literal_eval(row[5]), '7': ast.literal_eval(row[6]), '8': ast.literal_eval(row[7]), '9': ast.literal_eval(row[8]), '10': ast.literal_eval(row[9])}
             level_scores.append(score)
         return level_scores
-
-users = []
-users.append({'name':'username','password':'password','unlocked':0,'scores':[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],'preferences':20})
-personal_save(users)
-print(personal_pull())
