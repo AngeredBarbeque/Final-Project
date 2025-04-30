@@ -10,10 +10,10 @@ def settings():
     ).execute()
         
 
-"""
-def users():
-	if user:
-		action = inquirer.select(
+
+def users(user):
+    if user:
+        action = inquirer.select(
             message="Select an action:",
             choices=[
                 "Log in",
@@ -27,7 +27,7 @@ def users():
             settings()
         elif action == "Exit":
             return
-	else:
+    else:
         action = inquirer.select(
             message="Select an action:",
             choices=[
@@ -43,5 +43,5 @@ def users():
             settings()
         elif action == "Exit":
             return
-"""
+
 settings()
