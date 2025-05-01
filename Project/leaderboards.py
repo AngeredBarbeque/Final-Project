@@ -1,5 +1,7 @@
 #Alex Anderson, Updating leaderboards
 
+from info import *
+
 def personal_lead(user_info, level_number, new_score):
     old_score = user_info['scores'][level_number]
     if old_score >= new_score:
@@ -17,3 +19,20 @@ def overall_lead(level_scores, level_number, new_score):
     for i, entry in enumerate(top_ten, start=1):
         level_scores[level_number][str(i)] = entry
     return level_scores
+
+def personal_leaderboard_printing(user_info):
+    while True:
+        try:
+            level = int(input("Which level score do you want to check?(1-15): "))
+        except:
+            print("That was not a number!")
+            continue
+        if level not in [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]:
+            print("that was not a number from 1 to 15.")
+            continue
+        break
+    level -= 1
+    print(f"level {(level+1)} score: {user_info['scores'][level]}")
+
+users = personal_pull()
+personal_save(users)
