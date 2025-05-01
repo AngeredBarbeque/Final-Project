@@ -67,7 +67,7 @@ def passive_move(map, p):
         if p["y_vel"] < 0:
             p["y_vel"] = 0
     else:
-        p["y_vel"] -= 0.01 #UNDECIDED                                                                                                                                                                  ---
+        p["y_vel"] -= 0.1 #UNDECIDED                                                                                                                                                                  ---
     if 'up' in collision(map, p)[0] and p["y_vel"] > 0:
         p["y_vel"] = 0
 
@@ -89,6 +89,42 @@ def play_game(map_num, user_info):
     run = True
     try:
         import keyboard
+
+        def active_move(map, p):
+            pressed = []
+            for i in ["w", "up", "space"]:
+                if keyboard.is_pressed(i):
+                    pressed.append("up")
+            for i in ["a", "left"]:
+                if keyboard.is_pressed(i):
+                    pressed.append("left")
+            for i in ["d", "right"]:
+                if keyboard.is_pressed(i):
+                    pressed.append("right")
+
+            if 'up' in pressed and 'down' in collision(map, p)[0] and 'up' not in collision(map, p)[0]:
+                p["y_vel"] = 1 #UNDECIDED                                                                                                                                                                  ---
+
+            if 'left' in pressed:
+                if p["x_vel"] >= -0.5 and 'left' not in collision(map, p):
+                    p["x_vel"] -= 0.2 #UNDECIDED                                                                                                                                                                  ---
+            else:
+                if p["x_vel"] >= -0.1 and p["x_vel"] <= 0:
+                    p["x_vel"] = 0
+                else:
+                    p["x_vel"] += 0.05 #UNDECIDED                                                                                                                                                                  ---
+    
+            if 'right' in pressed:
+                if p["x_vel"] <= 0.5 and 'right' not in collision(map, p):
+                    p["x_vel"] += 0.2 #UNDECIDED                                                                                                                                                                  ---
+            else:
+                if p["x_vel"] <= 0.1 and p["x_vel"] >= 0:
+                    p["x_vel"] = 0
+                else:
+                    p["x_vel"] -= 0.05 #UNDECIDED                                                                                                                                                                  ---
+
+            return p
+
     except:
         run = False
         print("You haven't installed the keyboard module yet. To do this, type 'pip install keyboard' into the terminal.")
@@ -104,6 +140,7 @@ def play_game(map_num, user_info):
 
     while run:
         map = collision(map, p)[1]
+        p = active_move(map, p)
         p = passive_move(map, p)
         display(map, p, user_info)
         time.sleep(0.1)
