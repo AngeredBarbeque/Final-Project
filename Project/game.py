@@ -1,5 +1,6 @@
 import os
 import time
+import copy
 
 def area(x1, y1, x2, y2): # Defines a function which takes two coordinate points and selects every point between them.
     area_list = []
@@ -16,9 +17,9 @@ def get_block(coord, p, map):
             return block["type"]
     return " "
 
-def display(map, p, user_info): # Displays the screen around the player based on their selected screen size.
+def display(map, p): # Displays the screen around the player based on their selected screen size.
     os.system("cls")
-    s = int(user_info["preferences"]/2)#["screen_size"]
+    s = int(p["preferences"]["screen_size"]/2)
     prev_y = p["y_pos"] + s
     row = []
     for space in area(p["x_pos"] - s, p["y_pos"] - s, p["x_pos"] + s, p["y_pos"] + s):
@@ -36,9 +37,6 @@ def collision(map, p):
         collision_returns.append('dead')
     if get_block({"x": p["x_pos"], "y": p["y_pos"]}, p, map) == 'C':
         collision_returns.append('coin')
-        for block in map:
-            if block['coord'] == {"x": p["x_pos"], "y": p["y_pos"]}:
-                map.remove(block)
     if get_block({"x": p["x_pos"], "y": p["y_pos"]}, p, map) == '/':
         lever = map.index({"coord":{"x": p["x_pos"], "y": p["y_pos"]},"type":"/"})
         for coord in map[lever]["door"]:
@@ -59,21 +57,21 @@ def collision(map, p):
     #    Passively wait 0.5 seconds
     #    Remove the block from the map
     #    Passively wait 3 seconds
-    return collision_returns, map
+    return collision_returns
 
 
 def passive_move(map, p):
-    if 'down' in collision(map, p)[0]:
+    if 'down' in collision(map, p):
         if p["y_vel"] < 0:
             p["y_vel"] = 0
     else:
         p["y_vel"] -= 0.1 #UNDECIDED                                                                                                                                                                  ---
-    if 'up' in collision(map, p)[0] and p["y_vel"] > 0:
+    if 'up' in collision(map, p) and p["y_vel"] > 0:
         p["y_vel"] = 0
 
-    if 'left' in collision(map, p)[0] and p["x_vel"] < 0:
+    if 'left' in collision(map, p) and p["x_vel"] < 0:
         p["x_vel"] = 0
-    if 'right' in collision(map, p)[0] and p["x_vel"] > 0:
+    if 'right' in collision(map, p) and p["x_vel"] > 0:
         p["x_vel"] = 0
 
     p["x_pos_acc"] += p["x_vel"]
@@ -102,26 +100,26 @@ def play_game(map_num, user_info):
                 if keyboard.is_pressed(i):
                     pressed.append("right")
 
-            if 'up' in pressed and 'down' in collision(map, p)[0] and 'up' not in collision(map, p)[0]:
+            if 'up' in pressed and 'down' in collision(map, p) and 'up' not in collision(map, p):
                 p["y_vel"] = 1 #UNDECIDED                                                                                                                                                                  ---
 
             if 'left' in pressed:
-                if p["x_vel"] >= -0.5 and 'left' not in collision(map, p):
+                if p["x_vel"] > -0.5 and 'left' not in collision(map, p):
                     p["x_vel"] -= 0.2 #UNDECIDED                                                                                                                                                                  ---
             else:
                 if p["x_vel"] >= -0.1 and p["x_vel"] <= 0:
                     p["x_vel"] = 0
-                else:
-                    p["x_vel"] += 0.05 #UNDECIDED                                                                                                                                                                  ---
+                elif p["x_vel"] < 0.1:
+                    p["x_vel"] += 0.1 #UNDECIDED                                                                                                                                                                  ---
     
             if 'right' in pressed:
-                if p["x_vel"] <= 0.5 and 'right' not in collision(map, p):
+                if p["x_vel"] < 0.5 and 'right' not in collision(map, p):
                     p["x_vel"] += 0.2 #UNDECIDED                                                                                                                                                                  ---
             else:
                 if p["x_vel"] <= 0.1 and p["x_vel"] >= 0:
                     p["x_vel"] = 0
-                else:
-                    p["x_vel"] -= 0.05 #UNDECIDED                                                                                                                                                                  ---
+                elif p["x_vel"] > 0.1:
+                    p["x_vel"] -= 0.1 #UNDECIDED                                                                                                                                                                  ---
 
             return p
 
@@ -135,14 +133,23 @@ def play_game(map_num, user_info):
             {"coord":{"x":34,"y":-1},"type":"▓"}, {"coord":{"x":35,"y":-1},"type":"▓"}, {"coord":{"x":36,"y":-1},"type":"▓"}
         ]
     ]
-    map = maps[map_num]
-    p = {"name": user_info["name"][0].upper(), "x_pos": 0, "y_pos": 0, "x_pos_acc": 0, "y_pos_acc": 0, "x_vel": 0, "y_vel": 0} # All the player’s important values.
+    map = copy.deepcopy(maps[map_num])
+
+    p = {"name": user_info["name"][0].upper(), "x_pos": 0, "y_pos": 0, "x_pos_acc": 0, "y_pos_acc": 0, "x_vel": 0, "y_vel": 0, "coins": 0, "time": 0, "preferences": {"screen_size": user_info["preferences"]}} # All the player’s important values.
 
     while run:
-        map = collision(map, p)[1]
-        p = active_move(map, p)
+        p = active_move(map, p)  # Physics systems
         p = passive_move(map, p)
-        display(map, p, user_info)
-        time.sleep(0.1)
+
+        if 'coin' in collision(map, p):
+            coin = map.index({"coord":{"x": p["x_pos"], "y": p["y_pos"]},"type":"C"})
+            p["coins"] += 1
+            del map[coin]
+
+        display(map, p) # Display systems
+        print(f"Time: {p["time"]}\nCoins: {p["coins"]}/3")
+
+        time.sleep(0.1) # Timer systems
+        p["time"] = round(p["time"] + .1, 1)
 
 play_game(0, user_info)
