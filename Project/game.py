@@ -37,13 +37,14 @@ def display(map, p): # Displays the screen around the player based on their sele
 
 def collision(map, p):
     collision_returns = []
-    if get_block({"x": p["x_pos"], "y": p["y_pos"]}, p, map)[1] in ['<', '>', 'v', '^', '*'] or p["y_pos"] < -50:
+    player_block = get_block({"x": p["x_pos"], "y": p["y_pos"]}, p, map)[1]
+    if player_block in ['<', '>', 'v', '^', '*'] or p["y_pos"] < -50:
         collision_returns.append('dead')
-    if get_block({"x": p["x_pos"], "y": p["y_pos"]}, p, map)[1] == 'C':
+    if player_block == 'C':
         collision_returns.append('coin')
-    if get_block({"x": p["x_pos"], "y": p["y_pos"]}, p, map)[1] == 'F':
+    if player_block == 'F':
         collision_returns.append('fin')
-    if get_block({"x": p["x_pos"], "y": p["y_pos"]}, p, map)[1] == '/':
+    if player_block == '/':
         lever = map.index({"coord":{"x": p["x_pos"], "y": p["y_pos"]},"type":"/"})
         for coord in map[lever]["door"]:
             door = map.index({"coord":coord,"type":"|"})
