@@ -4,7 +4,7 @@ from info import *
 
 def personal_lead(user_info, level_number, new_score):
     old_score = user_info['scores'][level_number]
-    if old_score >= new_score:
+    if old_score[0] >= new_score[0]:
         best_score = old_score
     else:
         best_score = new_score
@@ -12,12 +12,16 @@ def personal_lead(user_info, level_number, new_score):
     return user_info
 
 def overall_lead(level_scores, level_number, new_score):
-    combined_scores = [level_scores[level_number][key][0] for key in level_scores[level_number]]
+    combined_scores = [(level_scores[level_number][key][0], level_scores[level_number][key][1]) for key in level_scores[level_number]]
     combined_scores.append(new_score)
-    combined_scores.sort(reverse=True)
+
+    combined_scores.sort(key=lambda x: x[0], reverse=True)
+
     top_ten = combined_scores[:10]
+
     for i, entry in enumerate(top_ten, start=1):
         level_scores[level_number][str(i)] = entry
+
     return level_scores
 
 def personal_leaderboard_printing(user_info):
@@ -33,6 +37,3 @@ def personal_leaderboard_printing(user_info):
         break
     level -= 1
     print(f"level {(level+1)} score: {user_info['scores'][level]}")
-
-users = personal_pull()
-personal_save(users)

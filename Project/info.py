@@ -23,7 +23,7 @@ def personal_pull():
         next(reader)
         users = []
         for row in reader:
-            user = {'name': row[0], 'password': row[1], 'unlocked': int(row[2]), 'scores': [int(row[3]),int(row[4]),int(row[5]),int(row[6]),int(row[7]),int(row[8]),int(row[9]),int(row[10]),int(row[11]),int(row[12]),int(row[13]),int(row[14]),int(row[15]),int(row[16]),int(row[17])], 'preferences': int(row[18])}
+            user = {'name': row[0], 'password': row[1], 'unlocked': int(row[2]), 'scores': [json.loads(row[3]),json.loads(row[4]),json.loads(row[5]),json.loads(row[6]),json.loads(row[7]),json.loads(row[8]),json.loads(row[9]),json.loads(row[10]),json.loads(row[11]),json.loads(row[12]),json.loads(row[13]),json.loads(row[14]),json.loads(row[15]),json.loads(row[16]),json.loads(row[17])], 'preferences': int(row[18])}
             users.append(user)
         return users
 
