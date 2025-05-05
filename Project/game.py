@@ -1,6 +1,9 @@
 import os
 import time
 import copy
+from InquirerPy import inquirer
+
+# Helper functions ----------------------------------------------------------------------------------------------------------------
 
 def area(x1, y1, x2, y2): # Defines a function which takes two coordinate points and selects every point between them.
     area_list = []
@@ -20,6 +23,12 @@ def get_block(coord, p, map):
     
     block_returns.append(" ")
     return block_returns
+
+def pause():
+    pass
+
+
+# Physics and Display -------------------------------------------------------------------------------------------------------------
 
 def display(map, p): # Displays the screen around the player based on their selected screen size.
     os.system("cls")
@@ -45,7 +54,10 @@ def collision(map, p):
     if player_block == 'F':
         collision_returns.append('fin')
     if player_block == '/':
-        lever = map.index({"coord":{"x": p["x_pos"], "y": p["y_pos"]},"type":"/"})
+        lever = next(
+            (i for i, d in enumerate(map) if all(item in d.items() for item in {"coord":{"x": p["x_pos"], "y": p["y_pos"]},"type":"/"}.items())),
+            None
+        )
         for coord in map[lever]["door"]:
             door = map.index({"coord":coord,"type":"|"})
             del map[door]
@@ -64,21 +76,23 @@ def collision(map, p):
     #    Passively wait 0.5 seconds
     #    Remove the block from the map
     #    Passively wait 3 seconds
-    return collision_returns
+    return collision_returns, map
 
+# Game Master Function ------------------------------------------------------------------------------------------------------------
 
 def passive_move(map, p):
-    if 'down' in collision(map, p):
+    colls, map = collision(map, p)[0]
+    if 'down' in colls:
         if p["y_vel"] < 0:
             p["y_vel"] = 0
     else:
         p["y_vel"] -= 0.2 #UNDECIDED                                                                                                                                                                  ---
-    if 'up' in collision(map, p) and p["y_vel"] > 0:
+    if 'up' in colls and p["y_vel"] > 0:
         p["y_vel"] = 0
 
-    if 'left' in collision(map, p) and p["x_vel"] < 0:
+    if 'left' in colls and p["x_vel"] < 0:
         p["x_vel"] = 0
-    if 'right' in collision(map, p) and p["x_vel"] > 0:
+    if 'right' in colls and p["x_vel"] > 0:
         p["x_vel"] = 0
 
     p["x_pos_acc"] += p["x_vel"]
@@ -96,6 +110,7 @@ def play_game(map_num, user_info):
         import keyboard
 
         def active_move(map, p):
+            colls, map = collision(map, p)[0]
             pressed = []
             for i in ["w", "up", "space"]:
                 if keyboard.is_pressed(i):
@@ -107,11 +122,11 @@ def play_game(map_num, user_info):
                 if keyboard.is_pressed(i):
                     pressed.append("right")
 
-            if 'up' in pressed and 'down' in collision(map, p) and 'up' not in collision(map, p):
+            if 'up' in pressed and 'down' in colls and 'up' not in colls:
                 p["y_vel"] = 1 #UNDECIDED                                                                                                                                                                  ---
 
             if 'left' in pressed:
-                if p["x_vel"] > -0.5 and 'left' not in collision(map, p):
+                if p["x_vel"] > -0.5 and 'left' not in colls:
                     p["x_vel"] -= 0.2 #UNDECIDED                                                                                                                                                                  ---
             else:
                 if p["x_vel"] >= -0.1 and p["x_vel"] <= 0:
@@ -120,7 +135,7 @@ def play_game(map_num, user_info):
                     p["x_vel"] += 0.2 #UNDECIDED                                                                                                                                                                  ---
     
             if 'right' in pressed:
-                if p["x_vel"] < 0.5 and 'right' not in collision(map, p):
+                if p["x_vel"] < 0.5 and 'right' not in colls:
                     p["x_vel"] += 0.2 #UNDECIDED                                                                                                                                                                  ---
             else:
                 if p["x_vel"] <= 0.1 and p["x_vel"] >= 0:
@@ -136,7 +151,7 @@ def play_game(map_num, user_info):
 
     maps = [
         [
-            {"coord":{"x":72,"y":19},"type":"█"},{"coord":{"x":72,"y":18},"type":"█"},{"coord":{"x":72,"y":17},"type":"█"},{"coord":{"x":72,"y":16},"type":"█"},{"coord":{"x":63,"y":15},"type":"C"},{"coord":{"x":72,"y":15},"type":"█"},{"coord":{"x":72,"y":14},"type":"█"},{"coord":{"x":52,"y":13},"type":"F"},{"coord":{"x":72,"y":13},"type":"|"},{"coord":{"x":51,"y":12},"type":"█"},{"coord":{"x":52,"y":12},"type":"█"},{"coord":{"x":53,"y":12},"type":"█"},{"coord":{"x":72,"y":12},"type":"█"},{"coord":{"x":73,"y":12},"type":"█"},{"coord":{"x":74,"y":12},"type":"█"},{"coord":{"x":75,"y":12},"type":"█"},{"coord":{"x":85,"y":11},"type":"\\"},{"coord":{"x":-4,"y":10},"type":"█"},{"coord":{"x":-3,"y":10},"type":"█"},{"coord":{"x":-2,"y":10},"type":"█"},{"coord":{"x":-1,"y":10},"type":"█"},{"coord":{"x":0,"y":10},"type":"█"},{"coord":{"x":1,"y":10},"type":"█"},{"coord":{"x":2,"y":10},"type":"█"},{"coord":{"x":3,"y":10},"type":"█"},{"coord":{"x":4,"y":10},"type":"█"},{"coord":{"x":5,"y":10},"type":"█"},{"coord":{"x":6,"y":10},"type":"█"},{"coord":{"x":7,"y":10},"type":"█"},{"coord":{"x":78,"y":10},"type":"█"},{"coord":{"x":79,"y":10},"type":"█"},{"coord":{"x":80,"y":10},"type":"█"},{"coord":{"x":84,"y":10},"type":"█"},{"coord":{"x":85,"y":10},"type":"█"},{"coord":{"x":-4,"y":9},"type":"█"},{"coord":{"x":-3,"y":9},"type":"█"},{"coord":{"x":-2,"y":9},"type":"█"},{"coord":{"x":-1,"y":9},"type":"█"},{"coord":{"x":0,"y":9},"type":"█"},{"coord":{"x":1,"y":9},"type":"█"},{"coord":{"x":2,"y":9},"type":"█"},{"coord":{"x":3,"y":9},"type":"█"},{"coord":{"x":4,"y":9},"type":"█"},{"coord":{"x":5,"y":9},"type":"█"},{"coord":{"x":6,"y":9},"type":"█"},{"coord":{"x":7,"y":9},"type":"█"},{"coord":{"x":-4,"y":8},"type":"█"},{"coord":{"x":-3,"y":8},"type":"█"},{"coord":{"x":6,"y":8},"type":"█"},{"coord":{"x":7,"y":8},"type":"█"},{"coord":{"x":-4,"y":7},"type":"█"},{"coord":{"x":-3,"y":7},"type":"█"},{"coord":{"x":6,"y":7},"type":"█"},{"coord":{"x":7,"y":7},"type":"█"},{"coord":{"x":71,"y":7},"type":"█"},{"coord":{"x":72,"y":7},"type":"█"},{"coord":{"x":73,"y":7},"type":"█"},{"coord":{"x":74,"y":7},"type":"█"},{"coord":{"x":75,"y":7},"type":"█"},{"coord":{"x":76,"y":7},"type":"█"},{"coord":{"x":-4,"y":6},"type":"█"},{"coord":{"x":-3,"y":6},"type":"█"},{"coord":{"x":6,"y":6},"type":"█"},{"coord":{"x":7,"y":6},"type":"█"},{"coord":{"x":40,"y":6},"type":"█"},{"coord":{"x":41,"y":6},"type":"█"},{"coord":{"x":42,"y":6},"type":"█"},{"coord":{"x":43,"y":6},"type":"█"},{"coord":{"x":44,"y":6},"type":"█"},{"coord":{"x":45,"y":6},"type":"█"},{"coord":{"x":46,"y":6},"type":"█"},{"coord":{"x":47,"y":6},"type":"█"},{"coord":{"x":48,"y":6},"type":"█"},{"coord":{"x":49,"y":6},"type":"█"},{"coord":{"x":50,"y":6},"type":"█"},{"coord":{"x":71,"y":6},"type":"█"},{"coord":{"x":-4,"y":5},"type":"█"},{"coord":{"x":-3,"y":5},"type":"█"},{"coord":{"x":6,"y":5},"type":"█"},{"coord":{"x":7,"y":5},"type":"█"},{"coord":{"x":40,"y":5},"type":"v"},{"coord":{"x":41,"y":5},"type":"v"},{"coord":{"x":42,"y":5},"type":"v"},{"coord":{"x":43,"y":5},"type":"v"},{"coord":{"x":44,"y":5},"type":"v"},{"coord":{"x":45,"y":5},"type":"v"},{"coord":{"x":46,"y":5},"type":"v"},{"coord":{"x":47,"y":5},"type":"v"},{"coord":{"x":48,"y":5},"type":"v"},{"coord":{"x":49,"y":5},"type":"v"},{"coord":{"x":50,"y":5},"type":"v"},{"coord":{"x":68,"y":5},"type":"^"},{"coord":{"x":71,"y":5},"type":"█"},{"coord":{"x":-4,"y":4},"type":"█"},{"coord":{"x":-3,"y":4},"type":"█"},{"coord":{"x":6,"y":4},"type":"█"},{"coord":{"x":7,"y":4},"type":"█"},{"coord":{"x":68,"y":4},"type":"█"},{"coord":{"x":69,"y":4},"type":"█"},{"coord":{"x":70,"y":4},"type":"█"},{"coord":{"x":71,"y":4},"type":"█"},{"coord":{"x":-7,"y":3},"type":"█"},{"coord":{"x":-6,"y":3},"type":"█"},{"coord":{"x":-5,"y":3},"type":"█"},{"coord":{"x":-4,"y":3},"type":"█"},{"coord":{"x":-3,"y":3},"type":"█"},{"coord":{"x":28,"y":3},"type":"█"},{"coord":{"x":29,"y":3},"type":"█"},{"coord":{"x":-7,"y":2},"type":"█"},{"coord":{"x":-6,"y":2},"type":"█"},{"coord":{"x":-5,"y":2},"type":"█"},{"coord":{"x":-4,"y":2},"type":"█"},{"coord":{"x":-3,"y":2},"type":"█"},{"coord":{"x":63,"y":2},"type":"█"},{"coord":{"x":64,"y":2},"type":"█"},{"coord":{"x":65,"y":2},"type":"█"},{"coord":{"x":75,"y":2},"type":"C"},{"coord":{"x":-7,"y":1},"type":"█"},{"coord":{"x":24,"y":1},"type":"█"},{"coord":{"x":25,"y":1},"type":"█"},{"coord":{"x":26,"y":1},"type":"█"},{"coord":{"x":53,"y":1},"type":"█"},{"coord":{"x":54,"y":1},"type":"█"},{"coord":{"x":55,"y":1},"type":"█"},{"coord":{"x":60,"y":1},"type":"█"},{"coord":{"x":61,"y":1},"type":"█"},{"coord":{"x":62,"y":1},"type":"█"},{"coord":{"x":74,"y":1},"type":"█"},{"coord":{"x":75,"y":1},"type":"█"},{"coord":{"x":76,"y":1},"type":"█"},{"coord":{"x":-7,"y":0},"type":"█"},{"coord":{"x":-5,"y":0},"type":"C"},{"coord":{"x":12,"y":0},"type":"^"},{"coord":{"x":13,"y":0},"type":"^"},{"coord":{"x":14,"y":0},"type":"^"},{"coord":{"x":19,"y":0},"type":"█"},{"coord":{"x":20,"y":0},"type":"█"},{"coord":{"x":21,"y":0},"type":"█"},{"coord":{"x":22,"y":0},"type":"█"},{"coord":{"x":38,"y":0},"type":"█"},{"coord":{"x":39,"y":0},"type":"█"},{"coord":{"x":40,"y":0},"type":"█"},{"coord":{"x":41,"y":0},"type":"█"},{"coord":{"x":42,"y":0},"type":"█"},{"coord":{"x":43,"y":0},"type":"█"},{"coord":{"x":44,"y":0},"type":"█"},{"coord":{"x":45,"y":0},"type":"█"},{"coord":{"x":46,"y":0},"type":"█"},{"coord":{"x":47,"y":0},"type":"█"},{"coord":{"x":48,"y":0},"type":"█"},{"coord":{"x":49,"y":0},"type":"█"},{"coord":{"x":50,"y":0},"type":"█"},{"coord":{"x":-7,"y":-1},"type":"█"},{"coord":{"x":-6,"y":-1},"type":"█"},{"coord":{"x":-5,"y":-1},"type":"█"},{"coord":{"x":-4,"y":-1},"type":"█"},{"coord":{"x":-3,"y":-1},"type":"█"},{"coord":{"x":-2,"y":-1},"type":"█"},{"coord":{"x":-1,"y":-1},"type":"█"},{"coord":{"x":0,"y":-1},"type":"█"},{"coord":{"x":1,"y":-1},"type":"█"},{"coord":{"x":2,"y":-1},"type":"█"},{"coord":{"x":3,"y":-1},"type":"█"},{"coord":{"x":4,"y":-1},"type":"█"},{"coord":{"x":5,"y":-1},"type":"█"},{"coord":{"x":6,"y":-1},"type":"█"},{"coord":{"x":7,"y":-1},"type":"█"},{"coord":{"x":8,"y":-1},"type":"█"},{"coord":{"x":9,"y":-1},"type":"█"},{"coord":{"x":10,"y":-1},"type":"█"},{"coord":{"x":11,"y":-1},"type":"█"},{"coord":{"x":12,"y":-1},"type":"█"},{"coord":{"x":13,"y":-1},"type":"█"},{"coord":{"x":14,"y":-1},"type":"█"},{"coord":{"x":15,"y":-1},"type":"█"},{"coord":{"x":16,"y":-1},"type":"█"},{"coord":{"x":17,"y":-1},"type":"█"},{"coord":{"x":31,"y":-1},"type":"█"},{"coord":{"x":32,"y":-1},"type":"█"},{"coord":{"x":38,"y":-1},"type":"█"},{"coord":{"x":39,"y":-1},"type":"█"},{"coord":{"x":40,"y":-1},"type":"█"},{"coord":{"x":41,"y":-1},"type":"█"},{"coord":{"x":42,"y":-1},"type":"█"},{"coord":{"x":43,"y":-1},"type":"█"},{"coord":{"x":44,"y":-1},"type":"█"},{"coord":{"x":45,"y":-1},"type":"█"},{"coord":{"x":46,"y":-1},"type":"█"},{"coord":{"x":47,"y":-1},"type":"█"},{"coord":{"x":48,"y":-1},"type":"█"},{"coord":{"x":49,"y":-1},"type":"█"},{"coord":{"x":50,"y":-1},"type":"█"},{"coord":{"x":71,"y":-1},"type":"^"},{"coord":{"x":-7,"y":-2},"type":"█"},{"coord":{"x":-6,"y":-2},"type":"█"},{"coord":{"x":-5,"y":-2},"type":"█"},{"coord":{"x":-4,"y":-2},"type":"█"},{"coord":{"x":-3,"y":-2},"type":"█"},{"coord":{"x":-2,"y":-2},"type":"█"},{"coord":{"x":-1,"y":-2},"type":"█"},{"coord":{"x":0,"y":-2},"type":"█"},{"coord":{"x":1,"y":-2},"type":"█"},{"coord":{"x":2,"y":-2},"type":"█"},{"coord":{"x":3,"y":-2},"type":"█"},{"coord":{"x":4,"y":-2},"type":"█"},{"coord":{"x":5,"y":-2},"type":"█"},{"coord":{"x":6,"y":-2},"type":"█"},{"coord":{"x":7,"y":-2},"type":"█"},{"coord":{"x":8,"y":-2},"type":"█"},{"coord":{"x":9,"y":-2},"type":"█"},{"coord":{"x":10,"y":-2},"type":"█"},{"coord":{"x":11,"y":-2},"type":"█"},{"coord":{"x":12,"y":-2},"type":"█"},{"coord":{"x":13,"y":-2},"type":"█"},{"coord":{"x":14,"y":-2},"type":"█"},{"coord":{"x":15,"y":-2},"type":"█"},{"coord":{"x":16,"y":-2},"type":"█"},{"coord":{"x":17,"y":-2},"type":"█"},{"coord":{"x":34,"y":-2},"type":"*"},{"coord":{"x":35,"y":-2},"type":"*"},{"coord":{"x":36,"y":-2},"type":"*"},{"coord":{"x":68,"y":-2},"type":"█"},{"coord":{"x":69,"y":-2},"type":"█"},{"coord":{"x":70,"y":-2},"type":"█"},{"coord":{"x":71,"y":-2},"type":"█"},
+            {"coord":{"x":72,"y":19},"type":"█"},{"coord":{"x":72,"y":18},"type":"█"},{"coord":{"x":72,"y":17},"type":"█"},{"coord":{"x":72,"y":16},"type":"█"},{"coord":{"x":63,"y":15},"type":"C"},{"coord":{"x":72,"y":15},"type":"█"},{"coord":{"x":72,"y":14},"type":"█"},{"coord":{"x":52,"y":13},"type":"F"},{'coord': {'x': 72, 'y': 13}, 'type': '|'},{"coord":{"x":51,"y":12},"type":"█"},{"coord":{"x":52,"y":12},"type":"█"},{"coord":{"x":53,"y":12},"type":"█"},{"coord":{"x":72,"y":12},"type":"█"},{"coord":{"x":73,"y":12},"type":"█"},{"coord":{"x":74,"y":12},"type":"█"},{"coord":{"x":75,"y":12},"type":"█"},{"coord":{"x":85,"y":11},"type":"/","door":[{"x":72,"y":13}]},{"coord":{"x":-4,"y":10},"type":"█"},{"coord":{"x":-3,"y":10},"type":"█"},{"coord":{"x":-2,"y":10},"type":"█"},{"coord":{"x":-1,"y":10},"type":"█"},{"coord":{"x":0,"y":10},"type":"█"},{"coord":{"x":1,"y":10},"type":"█"},{"coord":{"x":2,"y":10},"type":"█"},{"coord":{"x":3,"y":10},"type":"█"},{"coord":{"x":4,"y":10},"type":"█"},{"coord":{"x":5,"y":10},"type":"█"},{"coord":{"x":6,"y":10},"type":"█"},{"coord":{"x":7,"y":10},"type":"█"},{"coord":{"x":78,"y":10},"type":"█"},{"coord":{"x":79,"y":10},"type":"█"},{"coord":{"x":80,"y":10},"type":"█"},{"coord":{"x":84,"y":10},"type":"█"},{"coord":{"x":85,"y":10},"type":"█"},{"coord":{"x":-4,"y":9},"type":"█"},{"coord":{"x":-3,"y":9},"type":"█"},{"coord":{"x":-2,"y":9},"type":"█"},{"coord":{"x":-1,"y":9},"type":"█"},{"coord":{"x":0,"y":9},"type":"█"},{"coord":{"x":1,"y":9},"type":"█"},{"coord":{"x":2,"y":9},"type":"█"},{"coord":{"x":3,"y":9},"type":"█"},{"coord":{"x":4,"y":9},"type":"█"},{"coord":{"x":5,"y":9},"type":"█"},{"coord":{"x":6,"y":9},"type":"█"},{"coord":{"x":7,"y":9},"type":"█"},{"coord":{"x":-4,"y":8},"type":"█"},{"coord":{"x":-3,"y":8},"type":"█"},{"coord":{"x":6,"y":8},"type":"█"},{"coord":{"x":7,"y":8},"type":"█"},{"coord":{"x":-4,"y":7},"type":"█"},{"coord":{"x":-3,"y":7},"type":"█"},{"coord":{"x":6,"y":7},"type":"█"},{"coord":{"x":7,"y":7},"type":"█"},{"coord":{"x":71,"y":7},"type":"█"},{"coord":{"x":72,"y":7},"type":"█"},{"coord":{"x":73,"y":7},"type":"█"},{"coord":{"x":74,"y":7},"type":"█"},{"coord":{"x":75,"y":7},"type":"█"},{"coord":{"x":76,"y":7},"type":"█"},{"coord":{"x":-4,"y":6},"type":"█"},{"coord":{"x":-3,"y":6},"type":"█"},{"coord":{"x":6,"y":6},"type":"█"},{"coord":{"x":7,"y":6},"type":"█"},{"coord":{"x":40,"y":6},"type":"█"},{"coord":{"x":41,"y":6},"type":"█"},{"coord":{"x":42,"y":6},"type":"█"},{"coord":{"x":43,"y":6},"type":"█"},{"coord":{"x":44,"y":6},"type":"█"},{"coord":{"x":45,"y":6},"type":"█"},{"coord":{"x":46,"y":6},"type":"█"},{"coord":{"x":47,"y":6},"type":"█"},{"coord":{"x":48,"y":6},"type":"█"},{"coord":{"x":49,"y":6},"type":"█"},{"coord":{"x":50,"y":6},"type":"█"},{"coord":{"x":71,"y":6},"type":"█"},{"coord":{"x":-4,"y":5},"type":"█"},{"coord":{"x":-3,"y":5},"type":"█"},{"coord":{"x":6,"y":5},"type":"█"},{"coord":{"x":7,"y":5},"type":"█"},{"coord":{"x":40,"y":5},"type":"v"},{"coord":{"x":41,"y":5},"type":"v"},{"coord":{"x":42,"y":5},"type":"v"},{"coord":{"x":43,"y":5},"type":"v"},{"coord":{"x":44,"y":5},"type":"v"},{"coord":{"x":45,"y":5},"type":"v"},{"coord":{"x":46,"y":5},"type":"v"},{"coord":{"x":47,"y":5},"type":"v"},{"coord":{"x":48,"y":5},"type":"v"},{"coord":{"x":49,"y":5},"type":"v"},{"coord":{"x":50,"y":5},"type":"v"},{"coord":{"x":68,"y":5},"type":"^"},{"coord":{"x":71,"y":5},"type":"█"},{"coord":{"x":-4,"y":4},"type":"█"},{"coord":{"x":-3,"y":4},"type":"█"},{"coord":{"x":6,"y":4},"type":"█"},{"coord":{"x":7,"y":4},"type":"█"},{"coord":{"x":68,"y":4},"type":"█"},{"coord":{"x":69,"y":4},"type":"█"},{"coord":{"x":70,"y":4},"type":"█"},{"coord":{"x":71,"y":4},"type":"█"},{"coord":{"x":-7,"y":3},"type":"█"},{"coord":{"x":-6,"y":3},"type":"█"},{"coord":{"x":-5,"y":3},"type":"█"},{"coord":{"x":-4,"y":3},"type":"█"},{"coord":{"x":-3,"y":3},"type":"█"},{"coord":{"x":28,"y":3},"type":"█"},{"coord":{"x":29,"y":3},"type":"█"},{"coord":{"x":-7,"y":2},"type":"█"},{"coord":{"x":-6,"y":2},"type":"█"},{"coord":{"x":-5,"y":2},"type":"█"},{"coord":{"x":-4,"y":2},"type":"█"},{"coord":{"x":-3,"y":2},"type":"█"},{"coord":{"x":63,"y":2},"type":"█"},{"coord":{"x":64,"y":2},"type":"█"},{"coord":{"x":65,"y":2},"type":"█"},{"coord":{"x":75,"y":2},"type":"C"},{"coord":{"x":-7,"y":1},"type":"█"},{"coord":{"x":24,"y":1},"type":"█"},{"coord":{"x":25,"y":1},"type":"█"},{"coord":{"x":26,"y":1},"type":"█"},{"coord":{"x":53,"y":1},"type":"█"},{"coord":{"x":54,"y":1},"type":"█"},{"coord":{"x":55,"y":1},"type":"█"},{"coord":{"x":60,"y":1},"type":"█"},{"coord":{"x":61,"y":1},"type":"█"},{"coord":{"x":62,"y":1},"type":"█"},{"coord":{"x":74,"y":1},"type":"█"},{"coord":{"x":75,"y":1},"type":"█"},{"coord":{"x":76,"y":1},"type":"█"},{"coord":{"x":-7,"y":0},"type":"█"},{"coord":{"x":-5,"y":0},"type":"C"},{"coord":{"x":12,"y":0},"type":"^"},{"coord":{"x":13,"y":0},"type":"^"},{"coord":{"x":14,"y":0},"type":"^"},{"coord":{"x":19,"y":0},"type":"█"},{"coord":{"x":20,"y":0},"type":"█"},{"coord":{"x":21,"y":0},"type":"█"},{"coord":{"x":22,"y":0},"type":"█"},{"coord":{"x":38,"y":0},"type":"█"},{"coord":{"x":39,"y":0},"type":"█"},{"coord":{"x":40,"y":0},"type":"█"},{"coord":{"x":41,"y":0},"type":"█"},{"coord":{"x":42,"y":0},"type":"█"},{"coord":{"x":43,"y":0},"type":"█"},{"coord":{"x":44,"y":0},"type":"█"},{"coord":{"x":45,"y":0},"type":"█"},{"coord":{"x":46,"y":0},"type":"█"},{"coord":{"x":47,"y":0},"type":"█"},{"coord":{"x":48,"y":0},"type":"█"},{"coord":{"x":49,"y":0},"type":"█"},{"coord":{"x":50,"y":0},"type":"█"},{"coord":{"x":-7,"y":-1},"type":"█"},{"coord":{"x":-6,"y":-1},"type":"█"},{"coord":{"x":-5,"y":-1},"type":"█"},{"coord":{"x":-4,"y":-1},"type":"█"},{"coord":{"x":-3,"y":-1},"type":"█"},{"coord":{"x":-2,"y":-1},"type":"█"},{"coord":{"x":-1,"y":-1},"type":"█"},{"coord":{"x":0,"y":-1},"type":"█"},{"coord":{"x":1,"y":-1},"type":"█"},{"coord":{"x":2,"y":-1},"type":"█"},{"coord":{"x":3,"y":-1},"type":"█"},{"coord":{"x":4,"y":-1},"type":"█"},{"coord":{"x":5,"y":-1},"type":"█"},{"coord":{"x":6,"y":-1},"type":"█"},{"coord":{"x":7,"y":-1},"type":"█"},{"coord":{"x":8,"y":-1},"type":"█"},{"coord":{"x":9,"y":-1},"type":"█"},{"coord":{"x":10,"y":-1},"type":"█"},{"coord":{"x":11,"y":-1},"type":"█"},{"coord":{"x":12,"y":-1},"type":"█"},{"coord":{"x":13,"y":-1},"type":"█"},{"coord":{"x":14,"y":-1},"type":"█"},{"coord":{"x":15,"y":-1},"type":"█"},{"coord":{"x":16,"y":-1},"type":"█"},{"coord":{"x":17,"y":-1},"type":"█"},{"coord":{"x":31,"y":-1},"type":"█"},{"coord":{"x":32,"y":-1},"type":"█"},{"coord":{"x":38,"y":-1},"type":"█"},{"coord":{"x":39,"y":-1},"type":"█"},{"coord":{"x":40,"y":-1},"type":"█"},{"coord":{"x":41,"y":-1},"type":"█"},{"coord":{"x":42,"y":-1},"type":"█"},{"coord":{"x":43,"y":-1},"type":"█"},{"coord":{"x":44,"y":-1},"type":"█"},{"coord":{"x":45,"y":-1},"type":"█"},{"coord":{"x":46,"y":-1},"type":"█"},{"coord":{"x":47,"y":-1},"type":"█"},{"coord":{"x":48,"y":-1},"type":"█"},{"coord":{"x":49,"y":-1},"type":"█"},{"coord":{"x":50,"y":-1},"type":"█"},{"coord":{"x":71,"y":-1},"type":"^"},{"coord":{"x":-7,"y":-2},"type":"█"},{"coord":{"x":-6,"y":-2},"type":"█"},{"coord":{"x":-5,"y":-2},"type":"█"},{"coord":{"x":-4,"y":-2},"type":"█"},{"coord":{"x":-3,"y":-2},"type":"█"},{"coord":{"x":-2,"y":-2},"type":"█"},{"coord":{"x":-1,"y":-2},"type":"█"},{"coord":{"x":0,"y":-2},"type":"█"},{"coord":{"x":1,"y":-2},"type":"█"},{"coord":{"x":2,"y":-2},"type":"█"},{"coord":{"x":3,"y":-2},"type":"█"},{"coord":{"x":4,"y":-2},"type":"█"},{"coord":{"x":5,"y":-2},"type":"█"},{"coord":{"x":6,"y":-2},"type":"█"},{"coord":{"x":7,"y":-2},"type":"█"},{"coord":{"x":8,"y":-2},"type":"█"},{"coord":{"x":9,"y":-2},"type":"█"},{"coord":{"x":10,"y":-2},"type":"█"},{"coord":{"x":11,"y":-2},"type":"█"},{"coord":{"x":12,"y":-2},"type":"█"},{"coord":{"x":13,"y":-2},"type":"█"},{"coord":{"x":14,"y":-2},"type":"█"},{"coord":{"x":15,"y":-2},"type":"█"},{"coord":{"x":16,"y":-2},"type":"█"},{"coord":{"x":17,"y":-2},"type":"█"},{"coord":{"x":34,"y":-2},"type":"*"},{"coord":{"x":35,"y":-2},"type":"*"},{"coord":{"x":36,"y":-2},"type":"*"},{"coord":{"x":68,"y":-2},"type":"█"},{"coord":{"x":69,"y":-2},"type":"█"},{"coord":{"x":70,"y":-2},"type":"█"},{"coord":{"x":71,"y":-2},"type":"█"},
             {"coord":{"x":34,"y":-1},"type":"▓"}, {"coord":{"x":35,"y":-1},"type":"▓"}, {"coord":{"x":36,"y":-1},"type":"▓"}
         ]
     ]
@@ -150,17 +165,33 @@ def play_game(map_num, user_info):
 
         display(map, p) # Display systems
         print(f"Time: {p["time"]}\nCoins: {p["coins"]}/3")
-        print(p["y_pos"] < 50)
 
-        colls = collision(map, p)
+
+        colls, map = collision(map, p)
         if 'coin' in colls:
             coin = map.index({"coord":{"x": p["x_pos"], "y": p["y_pos"]},"type":"C"})
             p["coins"] += 1
             del map[coin]
+
         if 'dead' in colls:
-            return
+            action = inquirer.select(
+                message="You've died!",
+                choices=[
+                    "Retry",
+                    "Main Menu"
+                    ],
+                default=None,
+            ).execute()
+            match action:
+                case "Retry":
+                    map = copy.deepcopy(maps[map_num])
+                    p = {"name": user_info["name"][0].upper(), "x_pos": 0, "y_pos": 0, "x_pos_acc": 0, "y_pos_acc": 0, "x_vel": 0, "y_vel": 0, "coins": 0, "time": 0, "preferences": {"screen_size": user_info["preferences"]}} # All the player’s important values.
+                case "Main Menu":
+                    return
+                
         if 'fin' in colls:
-            break
+            print(f"Congratulations! You've completed map {map_num + 1} in {p["time"]} seconds with {p["coins"]}/3 coins!")
+            # Record the score
 
         time.sleep(0.1) # Timer systems
         p["time"] = round(p["time"] + .1, 1)
