@@ -10,12 +10,16 @@ def area(x1, y1, x2, y2): # Defines a function which takes two coordinate points
     return area_list
 
 def get_block(coord, p, map):
+    block_returns = []
     if coord == {"x": p["x_pos"], "y": p["y_pos"]}:
-        return p["name"]
+        block_returns.append(p["name"])
+
     for block in map:
         if block["coord"] == coord:
-            return block["type"]
-    return " "
+            block_returns.append(block["type"])
+    
+    block_returns.append(" ")
+    return block_returns
 
 def display(map, p): # Displays the screen around the player based on their selected screen size.
     os.system("cls")
@@ -28,32 +32,34 @@ def display(map, p): # Displays the screen around the player based on their sele
                 print(i, end='')
             print()
             row = []
-        row.append(get_block(space, p, map))
+        row.append(get_block(space, p, map)[0])
         prev_y = space["y"]
 
 def collision(map, p):
     collision_returns = []
-    if get_block({"x": p["x_pos"], "y": p["y_pos"]}, p, map) in ['<', '>', 'v', '^', '*'] or p["y_pos"] < 50:
+    if get_block({"x": p["x_pos"], "y": p["y_pos"]}, p, map)[1] in ['<', '>', 'v', '^', '*'] or p["y_pos"] < -50:
         collision_returns.append('dead')
-    if get_block({"x": p["x_pos"], "y": p["y_pos"]}, p, map) == 'C':
+    if get_block({"x": p["x_pos"], "y": p["y_pos"]}, p, map)[1] == 'C':
         collision_returns.append('coin')
-    if get_block({"x": p["x_pos"], "y": p["y_pos"]}, p, map) == '/':
+    if get_block({"x": p["x_pos"], "y": p["y_pos"]}, p, map)[1] == 'F':
+        collision_returns.append('fin')
+    if get_block({"x": p["x_pos"], "y": p["y_pos"]}, p, map)[1] == '/':
         lever = map.index({"coord":{"x": p["x_pos"], "y": p["y_pos"]},"type":"/"})
         for coord in map[lever]["door"]:
             door = map.index({"coord":coord,"type":"|"})
             del map[door]
         del map[lever]
 
-    if get_block({"x": p["x_pos"], "y": p["y_pos"]-1}, p, map) in ["█", "▓", "|"]:
+    if get_block({"x": p["x_pos"], "y": p["y_pos"]-1}, p, map)[0] in ["█", "▓", "|"]:
         collision_returns.append('down')
-    if get_block({"x": p["x_pos"], "y": p["y_pos"]+1}, p, map) in ["█", "▓", "|"]:
+    if get_block({"x": p["x_pos"], "y": p["y_pos"]+1}, p, map)[0] in ["█", "▓", "|"]:
         collision_returns.append('up')
-    if get_block({"x": p["x_pos"]-1, "y": p["y_pos"]}, p, map) in ["█", "▓", "|"]:
+    if get_block({"x": p["x_pos"]-1, "y": p["y_pos"]}, p, map)[0] in ["█", "▓", "|"]:
         collision_returns.append('left')
-    if get_block({"x": p["x_pos"]+1, "y": p["y_pos"]}, p, map) in ["█", "▓", "|"]:
+    if get_block({"x": p["x_pos"]+1, "y": p["y_pos"]}, p, map)[0] in ["█", "▓", "|"]:
         collision_returns.append('right')
 
-    #IF get_block(block below player, p, map) is a falling block:
+    #IF get_block(block below player, p, map)[0] is a falling block:
     #    Passively wait 0.5 seconds
     #    Remove the block from the map
     #    Passively wait 3 seconds
@@ -65,7 +71,7 @@ def passive_move(map, p):
         if p["y_vel"] < 0:
             p["y_vel"] = 0
     else:
-        p["y_vel"] -= 0.1 #UNDECIDED                                                                                                                                                                  ---
+        p["y_vel"] -= 0.2 #UNDECIDED                                                                                                                                                                  ---
     if 'up' in collision(map, p) and p["y_vel"] > 0:
         p["y_vel"] = 0
 
@@ -110,7 +116,7 @@ def play_game(map_num, user_info):
                 if p["x_vel"] >= -0.1 and p["x_vel"] <= 0:
                     p["x_vel"] = 0
                 elif p["x_vel"] < 0.1:
-                    p["x_vel"] += 0.1 #UNDECIDED                                                                                                                                                                  ---
+                    p["x_vel"] += 0.2 #UNDECIDED                                                                                                                                                                  ---
     
             if 'right' in pressed:
                 if p["x_vel"] < 0.5 and 'right' not in collision(map, p):
@@ -119,7 +125,7 @@ def play_game(map_num, user_info):
                 if p["x_vel"] <= 0.1 and p["x_vel"] >= 0:
                     p["x_vel"] = 0
                 elif p["x_vel"] > 0.1:
-                    p["x_vel"] -= 0.1 #UNDECIDED                                                                                                                                                                  ---
+                    p["x_vel"] -= 0.2 #UNDECIDED                                                                                                                                                                  ---
 
             return p
 
@@ -141,15 +147,23 @@ def play_game(map_num, user_info):
         p = active_move(map, p)  # Physics systems
         p = passive_move(map, p)
 
-        if 'coin' in collision(map, p):
+        display(map, p) # Display systems
+        print(f"Time: {p["time"]}\nCoins: {p["coins"]}/3")
+        print(p["y_pos"] < 50)
+
+        colls = collision(map, p)
+        if 'coin' in colls:
             coin = map.index({"coord":{"x": p["x_pos"], "y": p["y_pos"]},"type":"C"})
             p["coins"] += 1
             del map[coin]
-
-        display(map, p) # Display systems
-        print(f"Time: {p["time"]}\nCoins: {p["coins"]}/3")
+        if 'dead' in colls:
+            return
+        if 'fin' in colls:
+            break
 
         time.sleep(0.1) # Timer systems
         p["time"] = round(p["time"] + .1, 1)
+
+    
 
 play_game(0, user_info)
