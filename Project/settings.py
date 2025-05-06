@@ -46,5 +46,3 @@ def user_management(user, users):
                 user['preferences'] = settings()
             elif action == "Exit":
                 return user
-
-settings()
