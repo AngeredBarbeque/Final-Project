@@ -4,7 +4,7 @@ from settings import *
 
 users = personal_pull()
 user = None
-def main():
+def main(user, users):
     while True:
         action = inquirer.select(
             message="Select an action:",
@@ -22,4 +22,4 @@ def main():
         elif action == "Exit":
             break
 
-main()
+main(user, users)
