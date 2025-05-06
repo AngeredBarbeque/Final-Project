@@ -1,8 +1,10 @@
 #Alex Anderson, Updating leaderboards
 
+from info import *
+
 def personal_lead(user_info, level_number, new_score):
     old_score = user_info['scores'][level_number]
-    if old_score >= new_score:
+    if old_score[0] >= new_score[0]:
         best_score = old_score
     else:
         best_score = new_score
@@ -10,10 +12,28 @@ def personal_lead(user_info, level_number, new_score):
     return user_info
 
 def overall_lead(level_scores, level_number, new_score):
-    combined_scores = [level_scores[level_number][key][0] for key in level_scores[level_number]]
+    combined_scores = [(level_scores[level_number][key][0], level_scores[level_number][key][1]) for key in level_scores[level_number]]
     combined_scores.append(new_score)
-    combined_scores.sort(reverse=True)
+
+    combined_scores.sort(key=lambda x: x[0], reverse=True)
+
     top_ten = combined_scores[:10]
+
     for i, entry in enumerate(top_ten, start=1):
         level_scores[level_number][str(i)] = entry
+
     return level_scores
+
+def personal_leaderboard_printing(user_info):
+    while True:
+        try:
+            level = int(input("Which level score do you want to check?(1-15): "))
+        except:
+            print("That was not a number!")
+            continue
+        if level not in [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]:
+            print("that was not a number from 1 to 15.")
+            continue
+        break
+    level -= 1
+    print(f"level {(level+1)} score: {user_info['scores'][level]}")
