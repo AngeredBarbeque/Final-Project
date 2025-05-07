@@ -1,6 +1,7 @@
 import os
 import time
 import copy
+import threading
 from InquirerPy import inquirer
 
 # Helper functions ----------------------------------------------------------------------------------------------------------------
@@ -26,6 +27,21 @@ def get_block(coord, p, map):
 
 def pause():
     pass
+
+def falling_block(game_map, player, fallings):
+    p = copy.deepcopy(player)
+    map = copy.deepcopy(game_map)
+    if {"x": p["x_pos"], "y": p["y_pos"]-1} not in fallings:
+        fallings.append({"x": p["x_pos"], "y": p["y_pos"]-1})
+        pos = {"x": p["x_pos"], "y": p["y_pos"]-1}
+
+        falling = map.index({"coord":pos,"type":"▓"})
+        time.sleep(.5)
+        del map[falling]
+        time.sleep(2)
+        map.insert(falling, {"coord":pos,"type":"▓"})
+
+        del fallings[fallings.index(pos)]
 
 
 # Physics and Display -------------------------------------------------------------------------------------------------------------
@@ -54,14 +70,7 @@ def collision(map, p):
     if player_block == 'F':
         collision_returns.append('fin')
     if player_block == '/':
-        lever = next(
-            (i for i, d in enumerate(map) if all(item in d.items() for item in {"coord":{"x": p["x_pos"], "y": p["y_pos"]},"type":"/"}.items())),
-            None
-        )
-        for coord in map[lever]["door"]:
-            door = map.index({"coord":coord,"type":"|"})
-            del map[door]
-        del map[lever]
+        collision_returns.append('lever')
 
     if get_block({"x": p["x_pos"], "y": p["y_pos"]-1}, p, map)[0] in ["█", "▓", "|"]:
         collision_returns.append('down')
@@ -72,16 +81,15 @@ def collision(map, p):
     if get_block({"x": p["x_pos"]+1, "y": p["y_pos"]}, p, map)[0] in ["█", "▓", "|"]:
         collision_returns.append('right')
 
-    #IF get_block(block below player, p, map)[0] is a falling block:
-    #    Passively wait 0.5 seconds
-    #    Remove the block from the map
-    #    Passively wait 3 seconds
-    return collision_returns, map
+    if get_block({"x": p["x_pos"], "y": p["y_pos"]-1}, p, map)[0] == "▓":
+        collision_returns.append('falling')
+
+    return collision_returns
 
 # Game Master Function ------------------------------------------------------------------------------------------------------------
 
 def passive_move(map, p):
-    colls, map = collision(map, p)[0]
+    colls = collision(map, p)
     if 'down' in colls:
         if p["y_vel"] < 0:
             p["y_vel"] = 0
@@ -110,7 +118,7 @@ def play_game(map_num, user_info):
         import keyboard
 
         def active_move(map, p):
-            colls, map = collision(map, p)[0]
+            colls = collision(map, p)
             pressed = []
             for i in ["w", "up", "space"]:
                 if keyboard.is_pressed(i):
@@ -159,6 +167,8 @@ def play_game(map_num, user_info):
 
     p = {"name": user_info["name"][0].upper(), "x_pos": 0, "y_pos": 0, "x_pos_acc": 0, "y_pos_acc": 0, "x_vel": 0, "y_vel": 0, "coins": 0, "time": 0, "preferences": {"screen_size": user_info["preferences"]}} # All the player’s important values.
 
+    fallings = []
+
     while run:
         p = active_move(map, p)  # Physics systems
         p = passive_move(map, p)
@@ -167,11 +177,28 @@ def play_game(map_num, user_info):
         print(f"Time: {p["time"]}\nCoins: {p["coins"]}/3")
 
 
-        colls, map = collision(map, p)
+        colls = collision(map, p)
         if 'coin' in colls:
             coin = map.index({"coord":{"x": p["x_pos"], "y": p["y_pos"]},"type":"C"})
             p["coins"] += 1
             del map[coin]
+        if 'lever' in colls:
+            try:
+                lever = next(
+                (i for i, d in enumerate(map) if all(item in d.items() for item in {"coord":{"x": p["x_pos"], "y": p["y_pos"]},"type":"/"}.items())),
+                None
+                )
+                for coord in map[lever]["door"]:
+                    door = map.index({"coord":coord,"type":"|"})
+                    del map[door]
+            except:
+                pass
+        print('falling' in colls)
+        if 'falling' in colls:
+            # Run in background thread
+            thread = threading.Thread(target=falling_block, args=(map, p, fallings))
+            thread.daemon = True
+            thread.start()
 
         if 'dead' in colls:
             action = inquirer.select(
