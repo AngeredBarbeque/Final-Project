@@ -25,9 +25,6 @@ def get_block(coord, p, map):
     block_returns.append(" ")
     return block_returns
 
-def pause():
-    pass
-
 # Physics and Display -------------------------------------------------------------------------------------------------------------
 
 def display(map, p): # Displays the screen around the player based on their selected screen size.
@@ -193,8 +190,7 @@ def play_game(map_num, user_info):
                 pass
         print('falling' in colls)
         if 'falling' in colls:
-            # Run in background thread
-            thread = threading.Thread(target=falling_block, daemon=True)
+            thread = threading.Thread(target=falling_block, args=(p, fallings), daemon=True)
             thread.start()
 
         if 'dead' in colls:
@@ -218,9 +214,32 @@ def play_game(map_num, user_info):
             # Record the score
             return user_info
 
+        if keyboard.is_pressed("esc"):
+            while True:
+                action = inquirer.select(
+                    message="Game paused.",
+                    choices=[
+                        "Resume",
+                        "Retry",
+                        "Options",
+                        "Main Menu"
+                        ],
+                    default=None,
+                ).execute()
+
+                match action:
+                    case "Resume":
+                        break
+                    case "Retry":
+                        map = copy.deepcopy(maps[map_num])
+                        p = {"name": user_info["name"][0].upper(), "x_pos": 0, "y_pos": 0, "x_pos_acc": 0, "y_pos_acc": 0, "x_vel": 0, "y_vel": 0, "coins": 0, "time": 0, "preferences": {"screen_size": user_info["preferences"]}} # All the player’s important values.
+                        break
+                    case "Options":
+                        pass
+                    case "Main Menu":
+                        return user_info
+
         time.sleep(0.05) # Timer systems
         p["time"] = round(p["time"] + .05, 2)
-
-    
 
 play_game(0, user_info)
