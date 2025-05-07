@@ -188,7 +188,7 @@ def play_game(map_num, user_info):
                     del map[door]
             except:
                 pass
-        print('falling' in colls)
+        
         if 'falling' in colls:
             thread = threading.Thread(target=falling_block, args=(p, fallings), daemon=True)
             thread.start()
