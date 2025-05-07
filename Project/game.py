@@ -28,22 +28,6 @@ def get_block(coord, p, map):
 def pause():
     pass
 
-def falling_block(game_map, player, fallings):
-    p = copy.deepcopy(player)
-    map = copy.deepcopy(game_map)
-    if {"x": p["x_pos"], "y": p["y_pos"]-1} not in fallings:
-        fallings.append({"x": p["x_pos"], "y": p["y_pos"]-1})
-        pos = {"x": p["x_pos"], "y": p["y_pos"]-1}
-
-        falling = map.index({"coord":pos,"type":"▓"})
-        time.sleep(.5)
-        del map[falling]
-        time.sleep(2)
-        map.insert(falling, {"coord":pos,"type":"▓"})
-
-        del fallings[fallings.index(pos)]
-
-
 # Physics and Display -------------------------------------------------------------------------------------------------------------
 
 def display(map, p): # Displays the screen around the player based on their selected screen size.
@@ -93,7 +77,7 @@ def passive_move(map, p):
     if 'down' in colls:
         if p["y_vel"] < 0:
             p["y_vel"] = 0
-    else:
+    elif p["y_vel"] > -0.5:
         p["y_vel"] -= 0.2 #UNDECIDED                                                                                                                                                                  ---
     if 'up' in colls and p["y_vel"] > 0:
         p["y_vel"] = 0
@@ -131,7 +115,7 @@ def play_game(map_num, user_info):
                     pressed.append("right")
 
             if 'up' in pressed and 'down' in colls and 'up' not in colls:
-                p["y_vel"] = 1 #UNDECIDED                                                                                                                                                                  ---
+                p["y_vel"] = 1.28 #UNDECIDED                                                                                                                                                                  ---
 
             if 'left' in pressed:
                 if p["x_vel"] > -0.5 and 'left' not in colls:
@@ -156,6 +140,20 @@ def play_game(map_num, user_info):
     except:
         run = False
         print("You haven't installed the keyboard module yet. To do this, type 'pip install keyboard' into the terminal.")
+
+    def falling_block(player, fallings):
+        p = copy.deepcopy(player)
+        if {"x": p["x_pos"], "y": p["y_pos"]-1} not in fallings:
+            fallings.append({"x": p["x_pos"], "y": p["y_pos"]-1})
+            pos = {"x": p["x_pos"], "y": p["y_pos"]-1}
+
+            falling = map.index({"coord":pos,"type":"▓"})
+            time.sleep(.5)
+            del map[falling]
+            time.sleep(2)
+            map.insert(falling, {"coord":pos,"type":"▓"})
+
+            del fallings[fallings.index(pos)]
 
     maps = [
         [
@@ -196,8 +194,7 @@ def play_game(map_num, user_info):
         print('falling' in colls)
         if 'falling' in colls:
             # Run in background thread
-            thread = threading.Thread(target=falling_block, args=(map, p, fallings))
-            thread.daemon = True
+            thread = threading.Thread(target=falling_block, daemon=True)
             thread.start()
 
         if 'dead' in colls:
@@ -214,14 +211,15 @@ def play_game(map_num, user_info):
                     map = copy.deepcopy(maps[map_num])
                     p = {"name": user_info["name"][0].upper(), "x_pos": 0, "y_pos": 0, "x_pos_acc": 0, "y_pos_acc": 0, "x_vel": 0, "y_vel": 0, "coins": 0, "time": 0, "preferences": {"screen_size": user_info["preferences"]}} # All the player’s important values.
                 case "Main Menu":
-                    return
+                    return user_info
                 
         if 'fin' in colls:
             print(f"Congratulations! You've completed map {map_num + 1} in {p["time"]} seconds with {p["coins"]}/3 coins!")
             # Record the score
+            return user_info
 
-        time.sleep(0.1) # Timer systems
-        p["time"] = round(p["time"] + .1, 1)
+        time.sleep(0.05) # Timer systems
+        p["time"] = round(p["time"] + .05, 2)
 
     
 
