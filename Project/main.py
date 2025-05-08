@@ -4,6 +4,7 @@ run = True
 import os
 try:
     from InquirerPy import inquirer
+    from InquirerPy.validator import EmptyInputValidator
 except:
     print("You haven't installed InquirerPy yet. To do this, type 'pip install InquirerPy' into the terminal.")
     run = False
@@ -25,7 +26,13 @@ def main():
 
         match action:
             case "Play":
-                pass
+                integer_val = int(inquirer.number(
+                    message="choose level number:",
+                    min_allowed=1,
+                    max_allowed=15,
+                    validate=EmptyInputValidator(),
+                ).execute())
+                integer_val -= 1
             case "User":
                 #user_info = ...
                 pass
