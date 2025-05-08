@@ -24,7 +24,7 @@ def overall_lead(level_scores, level_number, new_score):
 
     return level_scores
 
-def personal_leaderboard_printing(user_info):
+def leaderboard_printing(user_info, level_scores):
     while True:
         try:
             level = int(input("Which level score do you want to check?(1-15): "))
@@ -36,4 +36,14 @@ def personal_leaderboard_printing(user_info):
             continue
         break
     level -= 1
-    print(f"level {(level+1)} score: {user_info['scores'][level]}")
+    number = 0
+    print(f"level {(level+1)}:")
+    print(f"|placement|time|coin amount|")
+    print("-" * 28)
+    for i in range(9):
+        number += 1
+        print(f"|    {number}    |{level_scores[level][str(number)][0]}|{level_scores[level][str(number)][1]}|")
+    number += 1    
+    print(f"|   {number}    |{level_scores[level][str(number)][0]}|{level_scores[level][str(number)][1]}|")
+    print("-" * 28)
+    print(f"|   You   |{user_info['scores'][level][0]}|{user_info['scores'][level][1]}|")
