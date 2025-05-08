@@ -79,17 +79,16 @@ def accounts_main(users):
             match choice:
                 case 'Sign In':
                     user_info = sign_in(users)
-                    print(not user_info)
                     input("Done reading?: ")
                 case 'Create Account':
                     users = create(users)
                     input("Done reading?: ")
                 case 'Exit':
-                    return user_info
+                    return user_info, users
         else:
             choice = inquirer.select(
                 message='What would you like to do?',
-                choices=['Sign out','Options','Delete Account','Exit']
+                choices=['Sign Out','Options','Delete Account','Exit']
             ).execute()
 
             match choice:
@@ -97,12 +96,17 @@ def accounts_main(users):
                     user_info = None
                     print("Successfully logged out.")
                     input("Done reading?: ")
+                case 'Options':
+                    choice = inquirer.select(
+                        message='Options',
+                        choices=['Screen Size']
+                    ).execute()
+
+                    
                 case 'Delete Account':
                     del users[users.index(user_info)]
+                    user_info = None
                     print("Successfully deleted account.")
                     input("Done reading?: ")
                 case 'Exit':
-                    return user_info
-
-
-accounts_main([])
+                    return user_info, users
