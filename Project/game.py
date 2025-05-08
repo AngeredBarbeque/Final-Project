@@ -1,6 +1,7 @@
 import os
 import time
 import copy
+import threading
 from InquirerPy import inquirer
 
 # Helper functions ----------------------------------------------------------------------------------------------------------------
@@ -23,10 +24,6 @@ def get_block(coord, p, map):
     
     block_returns.append(" ")
     return block_returns
-
-def pause():
-    pass
-
 
 # Physics and Display -------------------------------------------------------------------------------------------------------------
 
@@ -65,7 +62,7 @@ def collision(map, p):
     if get_block({"x": p["x_pos"]+1, "y": p["y_pos"]}, p, map)[0] in ["█", "▓", "|"]:
         collision_returns.append('right')
 
-    if get_block({"x": p["x_pos"], "y": p["y_pos"]-1}, p, map) == "▓":
+    if get_block({"x": p["x_pos"], "y": p["y_pos"]-1}, p, map)[0] == "▓":
         collision_returns.append('falling')
 
     return collision_returns
@@ -77,7 +74,7 @@ def passive_move(map, p):
     if 'down' in colls:
         if p["y_vel"] < 0:
             p["y_vel"] = 0
-    else:
+    elif p["y_vel"] > -0.5:
         p["y_vel"] -= 0.2 #UNDECIDED                                                                                                                                                                  ---
     if 'up' in colls and p["y_vel"] > 0:
         p["y_vel"] = 0
@@ -115,7 +112,7 @@ def play_game(map_num, user_info):
                     pressed.append("right")
 
             if 'up' in pressed and 'down' in colls and 'up' not in colls:
-                p["y_vel"] = 1 #UNDECIDED                                                                                                                                                                  ---
+                p["y_vel"] = 1.28 #UNDECIDED                                                                                                                                                                  ---
 
             if 'left' in pressed:
                 if p["x_vel"] > -0.5 and 'left' not in colls:
@@ -141,6 +138,20 @@ def play_game(map_num, user_info):
         run = False
         print("You haven't installed the keyboard module yet. To do this, type 'pip install keyboard' into the terminal.")
 
+    def falling_block(player, fallings):
+        p = copy.deepcopy(player)
+        if {"x": p["x_pos"], "y": p["y_pos"]-1} not in fallings:
+            fallings.append({"x": p["x_pos"], "y": p["y_pos"]-1})
+            pos = {"x": p["x_pos"], "y": p["y_pos"]-1}
+
+            falling = map.index({"coord":pos,"type":"▓"})
+            time.sleep(.5)
+            del map[falling]
+            time.sleep(2)
+            map.insert(falling, {"coord":pos,"type":"▓"})
+
+            del fallings[fallings.index(pos)]
+
     maps = [
         [
             {"coord":{"x":72,"y":19},"type":"█"},{"coord":{"x":72,"y":18},"type":"█"},{"coord":{"x":72,"y":17},"type":"█"},{"coord":{"x":72,"y":16},"type":"█"},{"coord":{"x":63,"y":15},"type":"C"},{"coord":{"x":72,"y":15},"type":"█"},{"coord":{"x":72,"y":14},"type":"█"},{"coord":{"x":52,"y":13},"type":"F"},{'coord': {'x': 72, 'y': 13}, 'type': '|'},{"coord":{"x":51,"y":12},"type":"█"},{"coord":{"x":52,"y":12},"type":"█"},{"coord":{"x":53,"y":12},"type":"█"},{"coord":{"x":72,"y":12},"type":"█"},{"coord":{"x":73,"y":12},"type":"█"},{"coord":{"x":74,"y":12},"type":"█"},{"coord":{"x":75,"y":12},"type":"█"},{"coord":{"x":85,"y":11},"type":"/","door":[{"x":72,"y":13}]},{"coord":{"x":-4,"y":10},"type":"█"},{"coord":{"x":-3,"y":10},"type":"█"},{"coord":{"x":-2,"y":10},"type":"█"},{"coord":{"x":-1,"y":10},"type":"█"},{"coord":{"x":0,"y":10},"type":"█"},{"coord":{"x":1,"y":10},"type":"█"},{"coord":{"x":2,"y":10},"type":"█"},{"coord":{"x":3,"y":10},"type":"█"},{"coord":{"x":4,"y":10},"type":"█"},{"coord":{"x":5,"y":10},"type":"█"},{"coord":{"x":6,"y":10},"type":"█"},{"coord":{"x":7,"y":10},"type":"█"},{"coord":{"x":78,"y":10},"type":"█"},{"coord":{"x":79,"y":10},"type":"█"},{"coord":{"x":80,"y":10},"type":"█"},{"coord":{"x":84,"y":10},"type":"█"},{"coord":{"x":85,"y":10},"type":"█"},{"coord":{"x":-4,"y":9},"type":"█"},{"coord":{"x":-3,"y":9},"type":"█"},{"coord":{"x":-2,"y":9},"type":"█"},{"coord":{"x":-1,"y":9},"type":"█"},{"coord":{"x":0,"y":9},"type":"█"},{"coord":{"x":1,"y":9},"type":"█"},{"coord":{"x":2,"y":9},"type":"█"},{"coord":{"x":3,"y":9},"type":"█"},{"coord":{"x":4,"y":9},"type":"█"},{"coord":{"x":5,"y":9},"type":"█"},{"coord":{"x":6,"y":9},"type":"█"},{"coord":{"x":7,"y":9},"type":"█"},{"coord":{"x":-4,"y":8},"type":"█"},{"coord":{"x":-3,"y":8},"type":"█"},{"coord":{"x":6,"y":8},"type":"█"},{"coord":{"x":7,"y":8},"type":"█"},{"coord":{"x":-4,"y":7},"type":"█"},{"coord":{"x":-3,"y":7},"type":"█"},{"coord":{"x":6,"y":7},"type":"█"},{"coord":{"x":7,"y":7},"type":"█"},{"coord":{"x":71,"y":7},"type":"█"},{"coord":{"x":72,"y":7},"type":"█"},{"coord":{"x":73,"y":7},"type":"█"},{"coord":{"x":74,"y":7},"type":"█"},{"coord":{"x":75,"y":7},"type":"█"},{"coord":{"x":76,"y":7},"type":"█"},{"coord":{"x":-4,"y":6},"type":"█"},{"coord":{"x":-3,"y":6},"type":"█"},{"coord":{"x":6,"y":6},"type":"█"},{"coord":{"x":7,"y":6},"type":"█"},{"coord":{"x":40,"y":6},"type":"█"},{"coord":{"x":41,"y":6},"type":"█"},{"coord":{"x":42,"y":6},"type":"█"},{"coord":{"x":43,"y":6},"type":"█"},{"coord":{"x":44,"y":6},"type":"█"},{"coord":{"x":45,"y":6},"type":"█"},{"coord":{"x":46,"y":6},"type":"█"},{"coord":{"x":47,"y":6},"type":"█"},{"coord":{"x":48,"y":6},"type":"█"},{"coord":{"x":49,"y":6},"type":"█"},{"coord":{"x":50,"y":6},"type":"█"},{"coord":{"x":71,"y":6},"type":"█"},{"coord":{"x":-4,"y":5},"type":"█"},{"coord":{"x":-3,"y":5},"type":"█"},{"coord":{"x":6,"y":5},"type":"█"},{"coord":{"x":7,"y":5},"type":"█"},{"coord":{"x":40,"y":5},"type":"v"},{"coord":{"x":41,"y":5},"type":"v"},{"coord":{"x":42,"y":5},"type":"v"},{"coord":{"x":43,"y":5},"type":"v"},{"coord":{"x":44,"y":5},"type":"v"},{"coord":{"x":45,"y":5},"type":"v"},{"coord":{"x":46,"y":5},"type":"v"},{"coord":{"x":47,"y":5},"type":"v"},{"coord":{"x":48,"y":5},"type":"v"},{"coord":{"x":49,"y":5},"type":"v"},{"coord":{"x":50,"y":5},"type":"v"},{"coord":{"x":68,"y":5},"type":"^"},{"coord":{"x":71,"y":5},"type":"█"},{"coord":{"x":-4,"y":4},"type":"█"},{"coord":{"x":-3,"y":4},"type":"█"},{"coord":{"x":6,"y":4},"type":"█"},{"coord":{"x":7,"y":4},"type":"█"},{"coord":{"x":68,"y":4},"type":"█"},{"coord":{"x":69,"y":4},"type":"█"},{"coord":{"x":70,"y":4},"type":"█"},{"coord":{"x":71,"y":4},"type":"█"},{"coord":{"x":-7,"y":3},"type":"█"},{"coord":{"x":-6,"y":3},"type":"█"},{"coord":{"x":-5,"y":3},"type":"█"},{"coord":{"x":-4,"y":3},"type":"█"},{"coord":{"x":-3,"y":3},"type":"█"},{"coord":{"x":28,"y":3},"type":"█"},{"coord":{"x":29,"y":3},"type":"█"},{"coord":{"x":-7,"y":2},"type":"█"},{"coord":{"x":-6,"y":2},"type":"█"},{"coord":{"x":-5,"y":2},"type":"█"},{"coord":{"x":-4,"y":2},"type":"█"},{"coord":{"x":-3,"y":2},"type":"█"},{"coord":{"x":63,"y":2},"type":"█"},{"coord":{"x":64,"y":2},"type":"█"},{"coord":{"x":65,"y":2},"type":"█"},{"coord":{"x":75,"y":2},"type":"C"},{"coord":{"x":-7,"y":1},"type":"█"},{"coord":{"x":24,"y":1},"type":"█"},{"coord":{"x":25,"y":1},"type":"█"},{"coord":{"x":26,"y":1},"type":"█"},{"coord":{"x":53,"y":1},"type":"█"},{"coord":{"x":54,"y":1},"type":"█"},{"coord":{"x":55,"y":1},"type":"█"},{"coord":{"x":60,"y":1},"type":"█"},{"coord":{"x":61,"y":1},"type":"█"},{"coord":{"x":62,"y":1},"type":"█"},{"coord":{"x":74,"y":1},"type":"█"},{"coord":{"x":75,"y":1},"type":"█"},{"coord":{"x":76,"y":1},"type":"█"},{"coord":{"x":-7,"y":0},"type":"█"},{"coord":{"x":-5,"y":0},"type":"C"},{"coord":{"x":12,"y":0},"type":"^"},{"coord":{"x":13,"y":0},"type":"^"},{"coord":{"x":14,"y":0},"type":"^"},{"coord":{"x":19,"y":0},"type":"█"},{"coord":{"x":20,"y":0},"type":"█"},{"coord":{"x":21,"y":0},"type":"█"},{"coord":{"x":22,"y":0},"type":"█"},{"coord":{"x":38,"y":0},"type":"█"},{"coord":{"x":39,"y":0},"type":"█"},{"coord":{"x":40,"y":0},"type":"█"},{"coord":{"x":41,"y":0},"type":"█"},{"coord":{"x":42,"y":0},"type":"█"},{"coord":{"x":43,"y":0},"type":"█"},{"coord":{"x":44,"y":0},"type":"█"},{"coord":{"x":45,"y":0},"type":"█"},{"coord":{"x":46,"y":0},"type":"█"},{"coord":{"x":47,"y":0},"type":"█"},{"coord":{"x":48,"y":0},"type":"█"},{"coord":{"x":49,"y":0},"type":"█"},{"coord":{"x":50,"y":0},"type":"█"},{"coord":{"x":-7,"y":-1},"type":"█"},{"coord":{"x":-6,"y":-1},"type":"█"},{"coord":{"x":-5,"y":-1},"type":"█"},{"coord":{"x":-4,"y":-1},"type":"█"},{"coord":{"x":-3,"y":-1},"type":"█"},{"coord":{"x":-2,"y":-1},"type":"█"},{"coord":{"x":-1,"y":-1},"type":"█"},{"coord":{"x":0,"y":-1},"type":"█"},{"coord":{"x":1,"y":-1},"type":"█"},{"coord":{"x":2,"y":-1},"type":"█"},{"coord":{"x":3,"y":-1},"type":"█"},{"coord":{"x":4,"y":-1},"type":"█"},{"coord":{"x":5,"y":-1},"type":"█"},{"coord":{"x":6,"y":-1},"type":"█"},{"coord":{"x":7,"y":-1},"type":"█"},{"coord":{"x":8,"y":-1},"type":"█"},{"coord":{"x":9,"y":-1},"type":"█"},{"coord":{"x":10,"y":-1},"type":"█"},{"coord":{"x":11,"y":-1},"type":"█"},{"coord":{"x":12,"y":-1},"type":"█"},{"coord":{"x":13,"y":-1},"type":"█"},{"coord":{"x":14,"y":-1},"type":"█"},{"coord":{"x":15,"y":-1},"type":"█"},{"coord":{"x":16,"y":-1},"type":"█"},{"coord":{"x":17,"y":-1},"type":"█"},{"coord":{"x":31,"y":-1},"type":"█"},{"coord":{"x":32,"y":-1},"type":"█"},{"coord":{"x":38,"y":-1},"type":"█"},{"coord":{"x":39,"y":-1},"type":"█"},{"coord":{"x":40,"y":-1},"type":"█"},{"coord":{"x":41,"y":-1},"type":"█"},{"coord":{"x":42,"y":-1},"type":"█"},{"coord":{"x":43,"y":-1},"type":"█"},{"coord":{"x":44,"y":-1},"type":"█"},{"coord":{"x":45,"y":-1},"type":"█"},{"coord":{"x":46,"y":-1},"type":"█"},{"coord":{"x":47,"y":-1},"type":"█"},{"coord":{"x":48,"y":-1},"type":"█"},{"coord":{"x":49,"y":-1},"type":"█"},{"coord":{"x":50,"y":-1},"type":"█"},{"coord":{"x":71,"y":-1},"type":"^"},{"coord":{"x":-7,"y":-2},"type":"█"},{"coord":{"x":-6,"y":-2},"type":"█"},{"coord":{"x":-5,"y":-2},"type":"█"},{"coord":{"x":-4,"y":-2},"type":"█"},{"coord":{"x":-3,"y":-2},"type":"█"},{"coord":{"x":-2,"y":-2},"type":"█"},{"coord":{"x":-1,"y":-2},"type":"█"},{"coord":{"x":0,"y":-2},"type":"█"},{"coord":{"x":1,"y":-2},"type":"█"},{"coord":{"x":2,"y":-2},"type":"█"},{"coord":{"x":3,"y":-2},"type":"█"},{"coord":{"x":4,"y":-2},"type":"█"},{"coord":{"x":5,"y":-2},"type":"█"},{"coord":{"x":6,"y":-2},"type":"█"},{"coord":{"x":7,"y":-2},"type":"█"},{"coord":{"x":8,"y":-2},"type":"█"},{"coord":{"x":9,"y":-2},"type":"█"},{"coord":{"x":10,"y":-2},"type":"█"},{"coord":{"x":11,"y":-2},"type":"█"},{"coord":{"x":12,"y":-2},"type":"█"},{"coord":{"x":13,"y":-2},"type":"█"},{"coord":{"x":14,"y":-2},"type":"█"},{"coord":{"x":15,"y":-2},"type":"█"},{"coord":{"x":16,"y":-2},"type":"█"},{"coord":{"x":17,"y":-2},"type":"█"},{"coord":{"x":34,"y":-2},"type":"*"},{"coord":{"x":35,"y":-2},"type":"*"},{"coord":{"x":36,"y":-2},"type":"*"},{"coord":{"x":68,"y":-2},"type":"█"},{"coord":{"x":69,"y":-2},"type":"█"},{"coord":{"x":70,"y":-2},"type":"█"},{"coord":{"x":71,"y":-2},"type":"█"},
@@ -150,6 +161,8 @@ def play_game(map_num, user_info):
     map = copy.deepcopy(maps[map_num])
 
     p = {"name": user_info["name"][0].upper(), "x_pos": 0, "y_pos": 0, "x_pos_acc": 0, "y_pos_acc": 0, "x_vel": 0, "y_vel": 0, "coins": 0, "time": 0, "preferences": {"screen_size": user_info["preferences"]}} # All the player’s important values.
+
+    fallings = []
 
     while run:
         p = active_move(map, p)  # Physics systems
@@ -173,9 +186,12 @@ def play_game(map_num, user_info):
                 for coord in map[lever]["door"]:
                     door = map.index({"coord":coord,"type":"|"})
                     del map[door]
-                del map[lever]
             except:
                 pass
+        
+        if 'falling' in colls:
+            thread = threading.Thread(target=falling_block, args=(p, fallings), daemon=True)
+            thread.start()
 
         if 'dead' in colls:
             action = inquirer.select(
@@ -191,15 +207,39 @@ def play_game(map_num, user_info):
                     map = copy.deepcopy(maps[map_num])
                     p = {"name": user_info["name"][0].upper(), "x_pos": 0, "y_pos": 0, "x_pos_acc": 0, "y_pos_acc": 0, "x_vel": 0, "y_vel": 0, "coins": 0, "time": 0, "preferences": {"screen_size": user_info["preferences"]}} # All the player’s important values.
                 case "Main Menu":
-                    return
+                    return user_info
                 
         if 'fin' in colls:
             print(f"Congratulations! You've completed map {map_num + 1} in {p["time"]} seconds with {p["coins"]}/3 coins!")
             # Record the score
+            return user_info
 
-        time.sleep(0.1) # Timer systems
-        p["time"] = round(p["time"] + .1, 1)
+        if keyboard.is_pressed("esc"):
+            while True:
+                action = inquirer.select(
+                    message="Game paused.",
+                    choices=[
+                        "Resume",
+                        "Retry",
+                        "Options",
+                        "Main Menu"
+                        ],
+                    default=None,
+                ).execute()
 
-    
+                match action:
+                    case "Resume":
+                        break
+                    case "Retry":
+                        map = copy.deepcopy(maps[map_num])
+                        p = {"name": user_info["name"][0].upper(), "x_pos": 0, "y_pos": 0, "x_pos_acc": 0, "y_pos_acc": 0, "x_vel": 0, "y_vel": 0, "coins": 0, "time": 0, "preferences": {"screen_size": user_info["preferences"]}} # All the player’s important values.
+                        break
+                    case "Options":
+                        pass
+                    case "Main Menu":
+                        return user_info
+
+        time.sleep(0.05) # Timer systems
+        p["time"] = round(p["time"] + .05, 2)
 
 play_game(0, user_info)
