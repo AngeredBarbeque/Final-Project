@@ -2,6 +2,7 @@ from InquirerPy import inquirer
 from InquirerPy.validator import EmptyInputValidator as EIV
 from Crypto.Cipher import AES
 import base64
+import os
 
 #Encrypts a password and returns the encrypted text.
 def encrypt(password):
@@ -26,20 +27,20 @@ def sign_in(users):
         return None
     usernames = []
     for i in users:
-        usernames.append(i.get('Username'))
+        usernames.append(i.get('name'))
     username = inquirer.select(
         message='Select an account:',
         choices=usernames
     ).execute()
-    password =  inquirer.text(
+    password = inquirer.text(
         message='Enter your password',
         validate=EIV,
         invalid_message='Password cannot be empty.'
     ).execute()
     for i in users:
-        if username == i.get('Username') and encrypt(password) == i.get('Password'):
-            print(f'Success! Signed in as {username}')
-            return i
+        if username == i.get('name') and encrypt(password) == i.get('password'):
+            print(f'Success! Signed in as {username}.')
+            return users[users.index(i)]
     print('Incorrect Password.')
     return None
         
@@ -60,19 +61,48 @@ def create(users):
         invalid_message='Password must be longer than 8 characters'
     ).execute()
     password = encrypt(password)
-    users.append({'name':username,'password':password,'unlocked':0,'scores':[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],'preferences':20})
+    users.append({'name':username,'password':password,'unlocked':0,'scores':[[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0]],'preferences':20})
+    print("Your account was created successfully.")
+    return users
 
 #Allows the user to create an account or sign in
 def accounts_main(users):
-    user = None
+    user_info = None
     while True:
-        choice = inquirer.select(
-            message='What would you like to do?',
-            choices=['Sign In','Create Account','Exit']
-        ).execute()
-        if choice == 'Sign In':
-            user = sign_in(users)
-        if choice == 'Create Account':
-            create(users)
+        os.system('cls')
+        if not user_info:
+            choice = inquirer.select(
+                message='What would you like to do?',
+                choices=['Sign In','Create Account','Exit']
+            ).execute()
+
+            match choice:
+                case 'Sign In':
+                    user_info = sign_in(users)
+                    print(not user_info)
+                    input("Done reading?: ")
+                case 'Create Account':
+                    users = create(users)
+                    input("Done reading?: ")
+                case 'Exit':
+                    return user_info
         else:
-            return user
+            choice = inquirer.select(
+                message='What would you like to do?',
+                choices=['Sign out','Options','Delete Account','Exit']
+            ).execute()
+
+            match choice:
+                case 'Sign Out':
+                    user_info = None
+                    print("Successfully logged out.")
+                    input("Done reading?: ")
+                case 'Delete Account':
+                    del users[users.index(user_info)]
+                    print("Successfully deleted account.")
+                    input("Done reading?: ")
+                case 'Exit':
+                    return user_info
+
+
+accounts_main([])
