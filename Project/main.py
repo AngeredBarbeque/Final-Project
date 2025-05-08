@@ -2,6 +2,9 @@
 run = True
 
 import os
+
+from info import *
+
 try:
     from InquirerPy import inquirer
     from InquirerPy.validator import EmptyInputValidator
@@ -9,8 +12,12 @@ except:
     print("You haven't installed InquirerPy yet. To do this, type 'pip install InquirerPy' into the terminal.")
     run = False
 
-def main():
+users = personal_pull()
+level_scores = overall_pull()
+
+def main(users, level_scores):
     user_info = None
+
     while True:
         os.system('cls')
         action = inquirer.select(
@@ -26,13 +33,17 @@ def main():
 
         match action:
             case "Play":
-                integer_val = int(inquirer.number(
-                    message="choose level number:",
-                    min_allowed=1,
-                    max_allowed=15,
-                    validate=EmptyInputValidator(),
-                ).execute())
-                integer_val -= 1
+                if user_info:
+                    integer_val = int(inquirer.number(
+                        message="choose level number:",
+                        min_allowed=1,
+                        max_allowed=15,
+                        validate=EmptyInputValidator(),
+                    ).execute())
+                    integer_val -= 1
+                else:
+                    print("You have to log in to play the game. To do this, select 'User' on the main menu.")
+                    input("Done reading?:")
             case "User":
                 #user_info = ...
                 pass
@@ -48,6 +59,10 @@ Scores are sorted based on solely time; coins are an optional collectible.
 
 Gameplay ---
 To move, use WASD, space, or the arrow keys while in a level.
+Levers, marked with '/', open doors, marked with '|'.
+Coins, an optional collectible, are marked with 'C'.
+Falling blocks, marked with '▓', disappear after you stand on them.
+Reach the finish (marked with 'F') to save your time.
 """)
                 input("Done reading?: ")
             case "Exit":
@@ -55,4 +70,4 @@ To move, use WASD, space, or the arrow keys while in a level.
                 break
 
 if run:
-    main()
+    main(users, level_scores)
