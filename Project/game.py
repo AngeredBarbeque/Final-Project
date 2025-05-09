@@ -2,7 +2,10 @@ import os
 import time
 import copy
 import threading
+
 from InquirerPy import inquirer
+
+from leaderboards import *
 
 # Helper functions ----------------------------------------------------------------------------------------------------------------
 
@@ -93,7 +96,7 @@ def passive_move(map, p):
 user_info = {"name": "Jonas", "preferences": 20}
 
 
-def play_game(map_num, user_info):
+def play_game(map_num, user_info, level_scores):
     run = True
     try:
         import keyboard
@@ -207,12 +210,14 @@ def play_game(map_num, user_info):
                     map = copy.deepcopy(maps[map_num])
                     p = {"name": user_info["name"][0].upper(), "x_pos": 0, "y_pos": 0, "x_pos_acc": 0, "y_pos_acc": 0, "x_vel": 0, "y_vel": 0, "coins": 0, "time": 0, "preferences": {"screen_size": user_info["preferences"]}} # All the player’s important values.
                 case "Main Menu":
-                    return user_info
+                    return user_info, level_scores
                 
         if 'fin' in colls:
             print(f"Congratulations! You've completed map {map_num + 1} in {p["time"]} seconds with {p["coins"]}/3 coins!")
-            # Record the score
-            return user_info
+            user_info = personal_lead(user_info, map_num, [p['time'], p['coins']])
+            level_scores = overall_lead(level_scores, map_num, [p['time'], p['coins']])
+            input("Done reading?: ")
+            return user_info, level_scores
 
         if keyboard.is_pressed("esc"):
             while True:
@@ -237,9 +242,7 @@ def play_game(map_num, user_info):
                     case "Options":
                         pass
                     case "Main Menu":
-                        return user_info
+                        return user_info, level_scores
 
         time.sleep(0.05) # Timer systems
         p["time"] = round(p["time"] + .05, 2)
-
-play_game(0, user_info)
