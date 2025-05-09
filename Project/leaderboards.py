@@ -31,8 +31,17 @@ def leaderboard_printing(user_info, level_scores, level):
     print("-" * 28)
     for i in range(9):
         number += 1
-        print(f"|    {number}    |{level_scores[level][str(number)][0]}|{level_scores[level][str(number)][1]}|")
+        if level_scores[level][str(number)][0] == 100000:
+            print(f"|    {number}    |None|None|")
+        else:
+            print(f"|    {number}    |{level_scores[level][str(number)][0]}|{level_scores[level][str(number)][1]}|")
     number += 1    
-    print(f"|   {number}    |{level_scores[level][str(number)][0]}|{level_scores[level][str(number)][1]}|")
+    if level_scores[level][str(number)][0] == 100000:
+            print(f"|   {number}    |None|None|")
+    else:
+            print(f"|   {number}    |{level_scores[level][str(number)][0]}|{level_scores[level][str(number)][1]}|")
     print("-" * 28)
-    print(f"|   You   |{user_info['scores'][level][0]}|{user_info['scores'][level][1]}|")
+    if user_info['scores'][level][0] == 100000:
+         print(f"|   You   |None|None|")
+    else:
+        print(f"|   You   |{user_info['scores'][level][0]}|{user_info['scores'][level][1]}|")
