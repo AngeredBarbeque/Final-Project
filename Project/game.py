@@ -165,6 +165,7 @@ def play_game(map_num, user_info, level_scores):
     map = copy.deepcopy(maps[map_num])
 
     p = {"name": user_info["name"][0].upper(), "x_pos": 0, "y_pos": 0, "x_pos_acc": 0, "y_pos_acc": 0, "x_vel": 0, "y_vel": 0, "coins": 0, "time": 0, "preferences": {"screen_size": user_info["preferences"]}} # All the player’s important values.
+    start_time = time.time()
 
     fallings = []
 
@@ -198,6 +199,7 @@ def play_game(map_num, user_info, level_scores):
             thread.start()
 
         if 'dead' in colls:
+            os.system("cls")
             action = inquirer.select(
                 message="You've died!",
                 choices=[
@@ -210,6 +212,7 @@ def play_game(map_num, user_info, level_scores):
                 case "Retry":
                     map = copy.deepcopy(maps[map_num])
                     p = {"name": user_info["name"][0].upper(), "x_pos": 0, "y_pos": 0, "x_pos_acc": 0, "y_pos_acc": 0, "x_vel": 0, "y_vel": 0, "coins": 0, "time": 0, "preferences": {"screen_size": user_info["preferences"]}} # All the player’s important values.
+                    start_time = time.time()
                 case "Main Menu":
                     return user_info, level_scores
                 
@@ -223,7 +226,9 @@ def play_game(map_num, user_info, level_scores):
             return user_info, level_scores
 
         if keyboard.is_pressed("esc"):
+            pause_time = time.time()
             while True:
+                os.system("cls")
                 action = inquirer.select(
                     message="Game paused.",
                     choices=[
@@ -237,31 +242,34 @@ def play_game(map_num, user_info, level_scores):
 
                 match action:
                     case "Resume":
+                        start_time += (time.time()-pause_time)
                         break
                     case "Retry":
                         map = copy.deepcopy(maps[map_num])
                         p = {"name": user_info["name"][0].upper(), "x_pos": 0, "y_pos": 0, "x_pos_acc": 0, "y_pos_acc": 0, "x_vel": 0, "y_vel": 0, "coins": 0, "time": 0, "preferences": {"screen_size": user_info["preferences"]}} # All the player’s important values.
+                        start_time = time.time()
                         break
                     case "Options":
                         while True:
+                            os.system("cls")
                             choice = inquirer.select(
                                 message='Options',
                                 choices=['Screen Size', 'Exit']
                             ).execute()
 
-                            match action:
+                            match choice:
                                 case "Screen Size":
                                     screen_size = int(inquirer.number(
-                                        message="choose level number:",
+                                        message="Select screen size:",
                                         min_allowed=10,
                                         max_allowed=30,
-                                        validate=EIV(),
+                                        validate=EmptyInputValidator(),
                                     ).execute())
-                                    user_info["preferences"] = screen_size
+                                    p["preferences"]["screen_size"] = screen_size
                                 case "Exit":
                                     break
                     case "Main Menu":
                         return user_info, level_scores
 
         time.sleep(0.05) # Timer systems
-        p["time"] = round(p["time"] + .05, 2)
+        p["time"] = round(time.time()-start_time, 2)

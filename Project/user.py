@@ -98,6 +98,7 @@ def accounts_main(users):
                     input("Done reading?: ")
                 case 'Options':
                     while True:
+                        os.system("cls")
                         action = inquirer.select(
                             message='Options',
                             choices=['Screen Size', 'Exit']
@@ -106,7 +107,7 @@ def accounts_main(users):
                         match action:
                             case "Screen Size":
                                 screen_size = int(inquirer.number(
-                                    message="choose level number:",
+                                    message="Select screen size:",
                                     min_allowed=10,
                                     max_allowed=30,
                                     validate=EIV(),
@@ -115,8 +116,6 @@ def accounts_main(users):
                             case "Exit":
                                 break
 
-
-                    
                 case 'Delete Account':
                     del users[users.index(user_info)]
                     user_info = None
