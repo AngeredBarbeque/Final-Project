@@ -99,7 +99,7 @@ Press Esc at any time to pause the game.
 
 Gameplay ---              
 Levers, marked with '/', open doors, marked with '|'.
-Coins, an optional collectible, are marked with 'C'.
+Coins, an optional collectible, are marked with 'o'.
 Falling blocks, marked with '▓', disappear after you stand on them.
 Reach the finish (marked with 'F') to save your score.
 """)
