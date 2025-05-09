@@ -124,5 +124,3 @@ def accounts_main(users):
                     input("Done reading?: ")
                 case 'Exit':
                     return user_info, users
-                
-#This is a comment (no way)
