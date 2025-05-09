@@ -25,7 +25,6 @@ users = personal_pull()
 level_scores = overall_pull()
 from InquirerPy import inquirer
 from info import personal_pull
-from settings import *
 
 def main(users, level_scores):
     user_info = None
