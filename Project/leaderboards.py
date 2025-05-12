@@ -27,7 +27,7 @@ def overall_lead(level_scores, level_number, new_score):
 def leaderboard_printing(user_info, level_scores, level):
     number = 0
     print(f"level {(level+1)}:")
-    print(f"|placement|time|coin amount|")
+    print(f"|placement|name|time|coin amount|")
     print("-" * 28)
     for i in range(9):
         number += 1
@@ -42,6 +42,6 @@ def leaderboard_printing(user_info, level_scores, level):
             print(f"|   {number}    |{level_scores[level][str(number)][0]}|{level_scores[level][str(number)][1]}|")
     print("-" * 28)
     if user_info['scores'][level][0] == 100000:
-         print(f"|   You   |None|None|")
+         print(f"|    -    |You|None|None|")
     else:
-        print(f"|   You   |{user_info['scores'][level][0]}|{user_info['scores'][level][1]}|")
+        print(f"|    -    |You|{user_info['scores'][level][0]}|{user_info['scores'][level][1]}|")
