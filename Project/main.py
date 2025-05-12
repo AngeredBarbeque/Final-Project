@@ -1,3 +1,12 @@
+# Matthew Mckinley, Nicholas Larsen, Jonas Fairchild, Alex Anderson - Platform.txt
+
+"""
+TODO:
+Add a 'name' category to leaderboards
+Import all maps
+Ensure that finishing levels & saving scores works
+Playtest individual levels
+"""
 
 run = True
 
@@ -44,16 +53,21 @@ def main(users, level_scores):
             case "Play":
                 if user_info:
                     level_num = int(inquirer.number(
-                        message="choose level number:",
+                        message="Select level number:",
                         min_allowed=1,
                         max_allowed=user_info["unlocked"]+1,
                         validate=EmptyInputValidator(),
                     ).execute())
                     level_num -= 1
-
                     while True:
+                        os.system("cls")
+                        score = user_info["scores"][level_num][0]
+                        coins = user_info["scores"][level_num][1]
+                        if score == 100000:
+                            score = "N/A"
+                            coins = "N/A"
                         sub_action = inquirer.select(
-                            message=f"Level {level_num+1}\nBest score: {user_info["scores"][level_num][1]} seconds",
+                            message=f"Level {level_num+1}\nBest score: {score} seconds with {coins} coins",
                             choices=[
                                 "Play",
                                 "Leaderboard",
