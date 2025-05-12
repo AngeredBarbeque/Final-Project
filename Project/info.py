@@ -15,8 +15,14 @@ def overall_save(level_scores):
         writer = csv.writer(file)
         writer.writerow(["score one", "score two", "score three", "score four", "score five", "score six", "score seven", "score eight", "score nine", "score ten"])
         for level in level_scores:
-            writer.writerow([level['1'], level['2'], level['3'], level['4'], level['5'], level['6'], level['7'], level['8'], level['9'], level['10']])
-
+            row = []
+            for i in range(1, 11):
+                value = level[str(i)]
+                # Ensure it's a list before writing
+                if isinstance(value, tuple):
+                    value = list(value)
+                row.append(value)
+            writer.writerow(row)
 def personal_pull():
     with open("Project/personal.csv", "r", newline='') as file:
         reader = csv.reader(file)
@@ -36,3 +42,5 @@ def overall_pull():
             score = {'1': json.loads(row[0]), '2': json.loads(row[1]), '3': json.loads(row[2]), '4': json.loads(row[3]), '5': json.loads(row[4]), '6': json.loads(row[5]), '7': json.loads(row[6]), '8': json.loads(row[7]), '9': json.loads(row[8]), '10': json.loads(row[9])}
             level_scores.append(score)
         return level_scores
+
+#print(overall_pull())
