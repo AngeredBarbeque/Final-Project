@@ -57,7 +57,7 @@ def create(users):
             return None
     password = inquirer.text(
         message='Enter a password:',
-        validate=lambda result: len(username) < 8,
+        validate=lambda result: len(username.split()) < 8,
         invalid_message='Password must be longer than 8 characters'
     ).execute()
     password = encrypt(password)
