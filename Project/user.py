@@ -97,12 +97,25 @@ def accounts_main(users):
                     print("Successfully logged out.")
                     input("Done reading?: ")
                 case 'Options':
-                    choice = inquirer.select(
-                        message='Options',
-                        choices=['Screen Size']
-                    ).execute()
+                    while True:
+                        os.system("cls")
+                        action = inquirer.select(
+                            message='Options',
+                            choices=['Screen Size', 'Exit']
+                        ).execute()
 
-                    
+                        match action:
+                            case "Screen Size":
+                                screen_size = int(inquirer.number(
+                                    message="Select screen size:",
+                                    min_allowed=10,
+                                    max_allowed=30,
+                                    validate=EIV(),
+                                ).execute())
+                                user_info["preferences"] = screen_size
+                            case "Exit":
+                                break
+
                 case 'Delete Account':
                     del users[users.index(user_info)]
                     user_info = None
@@ -110,5 +123,3 @@ def accounts_main(users):
                     input("Done reading?: ")
                 case 'Exit':
                     return user_info, users
-                
-#This is a comment (no way)
