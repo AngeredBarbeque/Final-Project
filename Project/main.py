@@ -32,15 +32,10 @@ except:
 
 users = personal_pull()
 level_scores = overall_pull()
-from InquirerPy import inquirer
-from info import personal_pull
 
 def main(users, level_scores):
     user_info = None
 
-users = personal_pull()
-user = None
-def main(user, users):
     while True:
         os.system('cls')
         action = inquirer.select(
@@ -49,7 +44,6 @@ def main(user, users):
                 "Play",
                 "User",
                 "Tutorial",
-                "User Management",
                 "Exit",
             ],
             default=None,
@@ -113,7 +107,7 @@ Press Esc at any time to pause the game.
 
 Gameplay ---              
 Levers, marked with '/', open doors, marked with '|'.
-Coins, an optional collectible, are marked with 'o'.
+Coins, an optional collectible, are marked with 'C'.
 Falling blocks, marked with '▓', disappear after you stand on them.
 Reach the finish (marked with 'F') to save your score.
 """)
@@ -122,13 +116,6 @@ Reach the finish (marked with 'F') to save your score.
                 personal_save(users)
                 overall_save(level_scores)
                 break
-        if action == "Play":
-            pass
-        elif action == "User Management":
-            user = user_management(user, users)
-        elif action == "Exit":
-            break
 
 if run:
     main(users, level_scores)
-main(user, users)
