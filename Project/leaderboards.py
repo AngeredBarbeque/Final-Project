@@ -26,7 +26,6 @@ def overall_lead(level_scores, level_number, new_score):
 
 def leaderboard_printing(user_info, level_scores, level):
     number = 0
-    print(f"level {(level+1)}:")
     print(f"|placement|name|time|coin amount|")
     print("-" * 28)
     for i in range(9):
