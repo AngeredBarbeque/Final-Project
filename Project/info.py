@@ -30,9 +30,21 @@ def personal_pull():
 def overall_pull():
     with open("Project/overall.csv", "r", newline='') as file:
         reader = csv.reader(file)
-        next(reader)
+        next(reader)  # Skip the header row
         level_scores = []
         for row in reader:
-            score = {'1': json.loads(row[0]), '2': json.loads(row[1]), '3': json.loads(row[2]), '4': json.loads(row[3]), '5': json.loads(row[4]), '6': json.loads(row[5]), '7': json.loads(row[6]), '8': json.loads(row[7]), '9': json.loads(row[8]), '10': json.loads(row[9])}
+            row[0] = [100000, 0, "name"]
+            score = {
+                '1':row[0],
+                '2':row[1],
+                '3':row[2],
+                '4':row[3],
+                '5':row[4],
+                '6':row[5],
+                '7':row[6],
+                '8':row[7],
+                '9':row[8],
+                '10':row[9]
+            }
             level_scores.append(score)
-        return level_scores
+    return level_scores
