@@ -58,7 +58,7 @@ def main(users, level_scores):
                         max_allowed=user_info["unlocked"]+1,
                         validate=EmptyInputValidator(),
                     ).execute())
-                    level_num -= 1
+                    level_num -= 1 #ALL
                     while True:
                         os.system("cls")
                         score = user_info["scores"][level_num][0]
