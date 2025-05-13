@@ -29,26 +29,41 @@ def leaderboard_printing(user_info, level_scores, level):
     print(f"level {(level+1)}:")
     print(f"|placement|name|time|coin amount|")
     print("-" * 33)
+    
+    # Loop through the first 9 placements
     for i in range(9):
         number += 1
-        print(level_scores[level][str(number)])
-        print(level_scores[level][str(number)][1])
-        if level_scores[level][str(number)][0] == 100000:
-            print(f"|    {number}    |None|None|")
+        if str(number) in level_scores[level]:
+            entry = level_scores[level][str(number)]
+            if isinstance(entry, list) and len(entry) >= 4:
+                if entry[0] == 100000:
+                    print(f"|    {number}    |None|None|")
+                else:
+                    print(f"|    {number}    |{entry[3]}|{entry[0]}|{entry[1]}|{entry[2]}")
+            else:
+                print(f"|    {number}    |Invalid data|")
         else:
-            print(f"|    {number}    |{level_scores[level][str(number)][3]}|{level_scores[level][str(number)][0]}|{level_scores[level][str(number)][1]}|{level_scores[level][str(number)][2]}")
-    number += 1    
-    if level_scores[level][str(number)][0] == 100000:
-            print(f"|   {number}    |None|None|")
+            print(f"|    {number}    |None|None|")
+    
+    # Handle the 10th placement
+    number += 1
+    if str(number) in level_scores[level]:
+        entry = level_scores[level][str(number)]
+        if isinstance(entry, list) and len(entry) >= 4:
+            if entry[0] == 100000:
+                print(f"|   {number}    |None|None|")
+            else:
+                print(f"|   {number}    |{entry[3]}|{entry[0]}|{entry[1]}|{entry[2]}")
+        else:
+            print(f"|   {number}    |Invalid data|")
     else:
-            print(f"|   {number}    |{level_scores[level][str(number)][0]}|{level_scores[level][str(number)][1]}|")
+        print(f"|   {number}    |None|None|")
+    
     print("-" * 28)
-    if user_info['scores'][level][0] == 100000:
+    
+    # Print the user's score
+    user_score = user_info['scores'].get(level, [100000, None])
+    if user_score[0] == 100000:
          print(f"|   You   |None|None|")
     else:
-        print(f"|   You   |{user_info['scores'][level][0]}|{user_info['scores'][level][1]}|")
-
-user_info = personal_pull()
-user_info = user_info[0]
-level_scores= overall_pull()
-leaderboard_printing(user_info, level_scores, 0)
+        print(f"|   You   |{user_score[0]}|{user_score[1]}|")
