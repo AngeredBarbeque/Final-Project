@@ -7,6 +7,7 @@ from InquirerPy import inquirer
 from InquirerPy.validator import EmptyInputValidator
 
 from leaderboards import *
+from info import *
 
 # Helper functions ----------------------------------------------------------------------------------------------------------------
 
