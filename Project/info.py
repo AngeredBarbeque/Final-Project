@@ -1,6 +1,6 @@
 #Alex Anderson, Pulling and saving info
 
-import csv
+import csv 
 import json
 
 def personal_save(users):
