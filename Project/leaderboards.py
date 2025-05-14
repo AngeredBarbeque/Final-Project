@@ -4,7 +4,7 @@ from info import *
 
 def personal_lead(user_info, level_number, new_score):
     old_score = user_info['scores'][level_number]
-    if old_score[0] >= new_score[0]:
+    if old_score[0] <= new_score[0]:
         best_score = old_score
     else:
         best_score = new_score
@@ -50,4 +50,4 @@ def leaderboard_printing(user_info, level_scores, level):
     if user_score[0] == 100000:
          print(f"|   You   |None|None|    None   |")
     else:
-        print(f"|   You   |{user_info['scores'][level][0]}|{user_info['scores'][level][1]}|")
+        print(f"|    -    |You|{user_info['scores'][level][0]}|{user_info['scores'][level][1]}|")
