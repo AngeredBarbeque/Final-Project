@@ -61,7 +61,7 @@ def create(users):
         invalid_message='Password must be longer than 8 characters'
     ).execute()
     password = encrypt(password)
-    users.append({'name':username,'password':password,'unlocked':0,'scores':[[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0]],'preferences':20})
+    users.append({'name':username,'password':password,'unlocked':0,'scores':[[100000,0],[100000,0],[100000,0],[100000,0],[100000,0],[100000,0],[100000,0],[100000,0],[100000,0],[100000,0],[100000,0],[100000,0],[100000,0],[100000,0],[100000,0]],'preferences':20})
     print("Your account was created successfully.")
     return users
 

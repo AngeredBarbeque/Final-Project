@@ -224,7 +224,7 @@ def play_game(map_num, user_info, level_scores):
         if 'fin' in colls:
             print(f"Congratulations! You've completed map {map_num + 1} in {p["time"]} seconds with {p["coins"]}/3 coins!")
             user_info = personal_lead(user_info, map_num, [p['time'], p['coins']])
-            level_scores = overall_lead(level_scores, map_num, [p['time'], p['coins']])
+            level_scores = overall_lead(level_scores, map_num, [p['time'], p['coins'], user_info['name']])
             if map_num == user_info["unlocked"] and user_info["unlocked"] != 14:
                 user_info["unlocked"] += 1
             input("Done reading?: ")
