@@ -79,6 +79,8 @@ def main(users, level_scores):
                         match sub_action:
                             case "Play":
                                 user_info, level_scores = play_game(level_num, user_info, level_scores)
+                                personal_save(users)
+                                overall_save(level_scores)
                             case "Leaderboard":
                                 leaderboard_printing(user_info, level_scores, level_num)
                                 input("Done reading?: ")

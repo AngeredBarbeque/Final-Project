@@ -4,7 +4,7 @@ from info import *
 
 def personal_lead(user_info, level_number, new_score):
     old_score = user_info['scores'][level_number]
-    if old_score[0] >= new_score[0]:
+    if old_score[0] <= new_score[0]:
         best_score = old_score
     else:
         best_score = new_score
@@ -15,7 +15,7 @@ def overall_lead(level_scores, level_number, new_score):
     combined_scores = [(level_scores[level_number][key][0], level_scores[level_number][key][1]) for key in level_scores[level_number]]
     combined_scores.append(new_score)
 
-    combined_scores.sort(key=lambda x: x[0], reverse=True)
+    combined_scores.sort(key=lambda x: x[0])
 
     top_ten = combined_scores[:10]
 
@@ -26,8 +26,7 @@ def overall_lead(level_scores, level_number, new_score):
 
 def leaderboard_printing(user_info, level_scores, level):
     number = 0
-    print(f"level {(level+1)}:")
-    print(f"|placement|time|coin amount|")
+    print(f"|placement|name|time|coin amount|")
     print("-" * 28)
     for i in range(9):
         number += 1
@@ -42,6 +41,6 @@ def leaderboard_printing(user_info, level_scores, level):
             print(f"|   {number}    |{level_scores[level][str(number)][0]}|{level_scores[level][str(number)][1]}|")
     print("-" * 28)
     if user_info['scores'][level][0] == 100000:
-         print(f"|   You   |None|None|")
+         print(f"|    -    |You|None|None|")
     else:
-        print(f"|   You   |{user_info['scores'][level][0]}|{user_info['scores'][level][1]}|")
+        print(f"|    -    |You|{user_info['scores'][level][0]}|{user_info['scores'][level][1]}|")
