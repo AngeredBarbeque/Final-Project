@@ -12,7 +12,7 @@ def personal_lead(user_info, level_number, new_score):
     return user_info
 
 def overall_lead(level_scores, level_number, new_score):
-    combined_scores = [(level_scores[level_number][key][0], level_scores[level_number][key][1]) for key in level_scores[level_number]]
+    combined_scores = [[level_scores[level_number][key][0], level_scores[level_number][key][1], level_scores[level_number][key][2]] for key in level_scores[level_number]]
     combined_scores.append(new_score)
 
     combined_scores.sort(key=lambda x: x[0], reverse=False)
