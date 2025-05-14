@@ -25,45 +25,29 @@ def overall_lead(level_scores, level_number, new_score):
     return level_scores
 
 def leaderboard_printing(user_info, level_scores, level):
-    number = 0
     print(f"level {(level+1)}:")
     print(f"|placement|name|time|coin amount|")
     print("-" * 33)
-    
     # Loop through the first 9 placements
     for i in range(9):
-        number += 1
-        if str(number) in level_scores[level]:
-            entry = level_scores[level][str(number)]
-            if isinstance(entry, list) and len(entry) >= 4:
-                if entry[0] == 100000:
-                    print(f"|    {number}    |None|None|")
-                else:
-                    print(f"|    {number}    |{entry[3]}|{entry[0]}|{entry[1]}|{entry[2]}")
-            else:
-                print(f"|    {number}    |Invalid data|")
+        number = i + 1
+        if level_scores[level][str(number)][0] == 100000:
+            print(f"|    {number}    |None|None|    None   |")
         else:
-            print(f"|    {number}    |None|None|")
+            print(f"|    {number}    |{level_scores[level][str(number)][2]}|{level_scores[level][str(number)][0]}|{level_scores[level][str(number)][1]}")
     
     # Handle the 10th placement
-    number += 1
-    if str(number) in level_scores[level]:
-        entry = level_scores[level][str(number)]
-        if isinstance(entry, list) and len(entry) >= 4:
-            if entry[0] == 100000:
-                print(f"|   {number}    |None|None|")
-            else:
-                print(f"|   {number}    |{entry[3]}|{entry[0]}|{entry[1]}|{entry[2]}")
-        else:
-            print(f"|   {number}    |Invalid data|")
+    number = 10
+    if level_scores[level][str(number)][0] == 100000:
+        print(f"|   {number}    |None|None|    None   |")
     else:
-        print(f"|   {number}    |None|None|")
+        print(f"|   {number}    |{level_scores[level][str(number)][2]}|{level_scores[level][str(number)][0]}|{level_scores[level][str(number)][1]}")
     
-    print("-" * 28)
+    print("-" * 33)
     
     # Print the user's score
-    user_score = user_info['scores'].get(level, [100000, None])
+    user_score = user_info['scores'][4]
     if user_score[0] == 100000:
-         print(f"|   You   |None|None|")
+         print(f"|   You   |None|None|    None   |")
     else:
-        print(f"|   You   |{user_score[0]}|{user_score[1]}|")
+        print(f"|   You   |{user_info['scores'][level][0]}|{user_info['scores'][level][1]}|")
