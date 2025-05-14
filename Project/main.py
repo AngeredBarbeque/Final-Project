@@ -59,6 +59,7 @@ def main(users, level_scores):
                         validate=EmptyInputValidator(),
                     ).execute())
                     level_num -= 1
+
                     while True:
                         os.system("cls")
                         score = user_info["scores"][level_num][0]
