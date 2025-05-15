@@ -73,7 +73,7 @@ def accounts_main(users):
         if not user_info:
             choice = inquirer.select(
                 message='What would you like to do?',
-                choices=['Sign In','Create Account','Exit']
+                choices=['Sign In','Create Account','Exit to main menu']
             ).execute()
 
             match choice:
