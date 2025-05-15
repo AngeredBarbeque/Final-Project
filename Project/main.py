@@ -112,6 +112,7 @@ Gameplay ---
 Levers, marked with '/', open doors, marked with '|'.
 Coins, an optional collectible, are marked with 'C'.
 Falling blocks, marked with '▓', disappear after you stand on them.
+Spikes are represented with v, ^, <, >, and *. Spikes kill you on contact.
 Reach the finish (marked with 'F') to save your score.
 """)
                 input("Done reading?: ")
