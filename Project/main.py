@@ -2,9 +2,6 @@
 
 """
 TODO:
-Add a 'name' category to leaderboards
-Import all maps
-Ensure that finishing levels & saving scores works
 Playtest individual levels
 """
 
@@ -92,7 +89,7 @@ def main(users, level_scores):
                     print("You have to log in to play the game. To do this, select 'User' on the main menu.")
                     input("Done reading?: ")
             case "User":
-                user_info, users = accounts_main(users)
+                user_info, users = accounts_main(users, user_info)
                 personal_save(users)
             case "Tutorial":
                 print("""

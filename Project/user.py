@@ -69,14 +69,13 @@ def create(users):
     return users
 
 #Allows the user to create an account or sign in
-def accounts_main(users):
-    user_info = None
+def accounts_main(users, user_info):
     while True:
         os.system('cls')
         if not user_info:
             choice = inquirer.select(
                 message='What would you like to do?',
-                choices=['Sign In','Create Account','Exit to main menu']
+                choices=['Sign In','Create Account','Exit']
             ).execute()
 
             match choice:
@@ -86,7 +85,7 @@ def accounts_main(users):
                 case 'Create Account':
                     users = create(users)
                     input("Done reading?: ")
-                case 'Exit to main menu':
+                case 'Exit':
                     return user_info, users
         else:
             choice = inquirer.select(
@@ -124,5 +123,6 @@ def accounts_main(users):
                     user_info = None
                     print("Successfully deleted account.")
                     input("Done reading?: ")
+                    return user_info, users
                 case 'Exit':
                     return user_info, users
