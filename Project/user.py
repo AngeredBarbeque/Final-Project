@@ -1,6 +1,9 @@
-from InquirerPy import inquirer
-from InquirerPy.validator import EmptyInputValidator as EIV
-from Crypto.Cipher import AES
+try:
+    from InquirerPy import inquirer
+    from InquirerPy.validator import EmptyInputValidator as EIV
+    from Crypto.Cipher import AES
+except:
+    pass
 import base64
 import os
 
