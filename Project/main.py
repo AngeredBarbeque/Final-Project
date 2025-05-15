@@ -97,7 +97,7 @@ def main(users, level_scores):
             case "Tutorial":
                 print("""
 Login ---
-If you want to save your scores, you will have to create an account. To do this, select 'User' in the main menu and then select 'Create Account'.
+If you want to play the game, you will have to create an account. To do this, select 'User' in the main menu and then select 'Create Account'.
 If you've already made an account, select 'Log in' instead.
 
 Scores ---
