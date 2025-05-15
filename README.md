@@ -49,7 +49,7 @@ N/A
 Phone: +1 (385) 338-9229    Email: jonasfairchild@gmail.com
 + I'm Nicholas Larsen, 15, and I go to Utah County Academy of Sciences. I want to major in computer science, although I dont know the specific field yet.
 + Matthew McKinley: I started learning how to code in the summer of 2024, starting in Python. The classes that I've taken and the things that I've been taught have helped me know how to code Python pretty well and I've learned a lot of the logic of coding, and I can follow different languages. I think it's a good skill to be able to code, but I don't think I'm going to do this as a profession. You can reach me at my school email: matthew.mckinley@ucas-edu.net
-+ 
++ Hey, this is Alex: I am in 9th grade, 4.0 student, I love playing tennis, reading a good fantasy adventure book, or just hanging out with my close freinds. I love coding and math and am thinking about becoming a Machine Learning engineer after collage. I can be contacted via my school email: (alex.anderson@ucas-edu.net) for any questions or concerns.
 
 ## Change Log
 ---
