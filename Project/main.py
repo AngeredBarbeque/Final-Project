@@ -9,23 +9,30 @@ run = True
 
 import os
 
-from info import *
-from user import accounts_main
-from game import play_game
-from leaderboards import leaderboard_printing
-
 try:
-    from InquirerPy import inquirer
-    from InquirerPy.validator import EmptyInputValidator
+    from info import *
+    from user import accounts_main
+    from game import play_game
+    from leaderboards import leaderboard_printing
 except:
-    print("You haven't installed InquirerPy yet. To do this, type 'pip install InquirerPy' into the terminal.")
-    run = False
+    try:
+        from InquirerPy import inquirer
+        from InquirerPy.validator import EmptyInputValidator
+    except:
+        print("You haven't installed InquirerPy yet. To do this, type 'pip install InquirerPy' into the terminal.")
+        run = False
 
-try:
-    from Crypto.Cipher import AES
-except:
-    print("You haven't installed PyCryptoDome yet. To do this, type 'pip install PyCryptoDome' into the terminal.")
-    run = False
+    try:
+        from Crypto.Cipher import AES
+    except:
+        print("You haven't installed PyCryptoDome yet. To do this, type 'pip install PyCryptoDome' into the terminal.")
+        run = False
+
+    try:
+        import keyboard
+    except:
+        print("You haven't installed keyboard yet. To do this, type 'pip install keyboard' into the terminal.")
+        run = False
 
 users = personal_pull()
 level_scores = overall_pull()
