@@ -2,6 +2,7 @@
 
 from info import *
 
+#Function to update the users personal leaderboard based on their new score
 def personal_lead(user_info, level_number, new_score):
     old_score = user_info['scores'][level_number]
     if old_score[0] <= new_score[0]:
@@ -11,6 +12,7 @@ def personal_lead(user_info, level_number, new_score):
     user_info['scores'][level_number] = best_score
     return user_info
 
+#Function to update the overall leaderboared bbased on their new score
 def overall_lead(level_scores, level_number, new_score):
     combined_scores = [[level_scores[level_number][key][0], level_scores[level_number][key][1], level_scores[level_number][key][2]] for key in level_scores[level_number]]
     combined_scores.append(new_score)
@@ -24,6 +26,7 @@ def overall_lead(level_scores, level_number, new_score):
 
     return level_scores
 
+#function to print the levels scoreboard as well as the users score for the level
 def leaderboard_printing(user_info, level_scores, level):
     print(f"| placement | name | time | coins |")
     print("-" * 33)
