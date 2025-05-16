@@ -87,6 +87,7 @@ def main(users, level_scores):
                                 personal_save(users)
                                 overall_save(level_scores)
                             case "Leaderboard":
+                                print()
                                 leaderboard_printing(user_info, level_scores, level_num)
                                 input("Done reading?: ")
                             case "Exit":
