@@ -60,7 +60,6 @@ def create(users):
     password = inquirer.text(
         message='Enter a password:',
         validate=lambda password: len(password) > 8,
-        validate=lambda result: len(username) < 8,
         invalid_message='Password must be longer than 8 characters'
     ).execute()
     password = encrypt(password)
