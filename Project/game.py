@@ -215,7 +215,7 @@ def play_game(map_num, user_info, level_scores):
         p = passive_move(map, p)
 
         display(map, p) # Display systems
-        print(f'Time: {p["time"]}\nCoins: {p["coins"]}/3')
+        print(f"Time: {p["time"]}\nCoins: {p["coins"]}/3")
 
 
         colls = collision(map, p)
@@ -258,10 +258,10 @@ def play_game(map_num, user_info, level_scores):
                     return user_info, level_scores
                 
         if 'fin' in colls:
-            print(f"Congratulations! You've completed map {map_num + 1} in {p['time']} seconds with {p['coins']}/3 coins!")
+            print(f"Congratulations! You've completed map {map_num + 1} in {p["time"]} seconds with {p["coins"]}/3 coins!")
             user_info = personal_lead(user_info, map_num, [p['time'], p['coins']])
             level_scores = overall_lead(level_scores, map_num, [p['time'], p['coins'], user_info['name']])
-            if map_num == user_info["unlocked"] and user_info["unlocked"] != 9:
+            if map_num == user_info["unlocked"] and user_info["unlocked"] != 14:
                 user_info["unlocked"] += 1
             input("Done reading?: ")
             return user_info, level_scores
@@ -307,7 +307,6 @@ def play_game(map_num, user_info, level_scores):
                                         validate=EmptyInputValidator(),
                                     ).execute())
                                     user_info["preferences"] = screen_size
-                                    p["screen_size"] = user_info["preferences"]
                                 case "Exit":
                                     break
                     case "Main Menu":
