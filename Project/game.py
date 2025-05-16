@@ -292,6 +292,7 @@ def play_game(map_num, user_info, level_scores): # Master function for the entir
                                         validate=EmptyInputValidator(),
                                     ).execute())
                                     user_info["preferences"] = screen_size
+                                    p["preferences"]["screen_size"] = screen_size
                                 case "Exit":
                                     break
                     case "Main Menu":
