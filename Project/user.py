@@ -73,7 +73,7 @@ def accounts_main(users):
         if not user_info:
             choice = inquirer.select(
                 message='What would you like to do?',
-                choices=['Sign In','Create Account','Exit']
+                choices=['Sign In','Create Account','Exit to main menu']
             ).execute()
 
             match choice:
@@ -83,12 +83,12 @@ def accounts_main(users):
                 case 'Create Account':
                     users = create(users)
                     input("Done reading?: ")
-                case 'Exit':
+                case 'Exit to main menu':
                     return user_info, users
         else:
             choice = inquirer.select(
                 message='What would you like to do?',
-                choices=['Sign Out','Options','Delete Account','Exit']
+                choices=['Sign Out','Options','Delete Account','Exit to main menu']
             ).execute()
 
             match choice:
@@ -121,5 +121,5 @@ def accounts_main(users):
                     user_info = None
                     print("Successfully deleted account.")
                     input("Done reading?: ")
-                case 'Exit':
+                case 'Exit to main menu':
                     return user_info, users
