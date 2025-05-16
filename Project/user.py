@@ -1,6 +1,9 @@
-from InquirerPy import inquirer
-from InquirerPy.validator import EmptyInputValidator as EIV
-from Crypto.Cipher import AES
+try:
+    from InquirerPy import inquirer
+    from InquirerPy.validator import EmptyInputValidator as EIV
+    from Crypto.Cipher import AES
+except:
+    pass
 import base64
 import os
 
@@ -66,8 +69,7 @@ def create(users):
     return users
 
 #Allows the user to create an account or sign in
-def accounts_main(users):
-    user_info = None
+def accounts_main(users, user_info):
     while True:
         os.system('cls')
         if not user_info:
@@ -121,5 +123,7 @@ def accounts_main(users):
                     user_info = None
                     print("Successfully deleted account.")
                     input("Done reading?: ")
+
                 case 'Exit to main menu':
+
                     return user_info, users
