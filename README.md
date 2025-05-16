@@ -28,7 +28,7 @@ To play the game, you have to log in.
 
 ## Current Features
 ---
-+ Play a long, story-driven platformer!
++ Play a unique platformer with 10 different levels!
 + Create an account that keeps all your best scores!
 + View leaderboards to see the best scores of all time!  
 
